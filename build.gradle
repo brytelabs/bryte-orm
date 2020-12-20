@@ -1,0 +1,28 @@
+plugins {
+    id 'java'
+    id "com.avast.gradle.docker-compose" version "0.14.0"
+}
+
+apply plugin: 'docker-compose'
+
+group 'org.brytelabs'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+dockerCompose.isRequiredBy(test)
+dockerCompose {
+    useComposeFiles = ['./docker/docker-compose.yml']
+    stopContainers = false
+}
