@@ -1,10 +1,13 @@
 package org.brytelabs.orm.core.generators;
 
+import org.brytelabs.orm.core.Field;
 import org.brytelabs.orm.core.builders.SelectBuilderImpl;
 import org.brytelabs.orm.core.operations.SelectOperation;
 import org.brytelabs.orm.exceptions.SqlQueryException;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class SelectGenerator implements Generator {
     private final SelectBuilderImpl selectBuilder;
@@ -13,7 +16,7 @@ public class SelectGenerator implements Generator {
         this.selectBuilder = selectBuilder;
         Objects.requireNonNull(selectBuilder, "SelectBuilder is required");
         Objects.requireNonNull(selectBuilder.getSelectOperation(), "SelectOperation is required for query");
-        Objects.requireNonNull(selectBuilder.getSelectTable(), "Table is required for query");
+        Objects.requireNonNull(selectBuilder.getTable(), "Table is required for query");
     }
 
     @Override
@@ -34,20 +37,22 @@ public class SelectGenerator implements Generator {
             default:
                 throw new SqlQueryException(selectBuilder.getSelectOperation() + " is not supported");
         }
-        return sb.append(" from ").append(selectBuilder.getSelectTable()).toString();
+        return sb.append(" from ").append(selectBuilder.getTable()).toString();
     }
 
-    private String quoteAggregateOperation(SelectOperation operation, String[] fields) {
-        if (fields == null || fields.length > 1) {
+    private String quoteAggregateOperation(SelectOperation operation, List<Field> fields) {
+        if (fields == null || fields.size() > 1) {
             throw new SqlQueryException("Aggregate operation " + operation + " requires 1 field");
         }
-        return operation.getValue() + "(" + fields[0] + ")";
+        return operation.getValue() + "(" + fields.get(0) + ")";
     }
 
-    private String delimitFields(String[] fields) {
+    private String delimitFields(List<Field> fields) {
         if (fields == null) {
             throw new SqlQueryException("At least 1 field is required for select with fields");
         }
-        return String.join(",", fields);
+        return fields.stream()
+                .map(Field::toString)
+                .collect(Collectors.joining(", "));
     }
 }

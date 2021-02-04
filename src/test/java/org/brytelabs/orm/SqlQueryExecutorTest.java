@@ -14,8 +14,7 @@ class SqlQueryExecutorTest extends BaseIntTest {
                 .where("field1").eq(1)
                 .and("field2").eq("value2")
                 .or("field2").eq("value3")
-                .orderBy("fsss", Direction.ASC)
-                .groupBy("sysa")
+                .orderAsc("fsss")
                 .build();
 //        Sql.select("account")
 //                .where("username").eq("something")
