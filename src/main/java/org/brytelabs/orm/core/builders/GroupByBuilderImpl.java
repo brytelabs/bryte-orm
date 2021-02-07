@@ -1,23 +1,30 @@
 package org.brytelabs.orm.core.builders;
 
-import org.brytelabs.orm.core.operations.Direction;
-import org.brytelabs.orm.core.Query;
-import org.brytelabs.orm.core.Select;
+import org.brytelabs.orm.api.GroupByBuilder;
+import org.brytelabs.orm.api.OrderByBuilder;
+import org.brytelabs.orm.api.Order;
 
-public class GroupByBuilderImpl implements Select.GroupByBuilder {
-    private String[] fields;
+public final class GroupByBuilderImpl implements GroupByBuilder {
+    private final String[] fields;
+    private final QueryImpl query;
 
-    public GroupByBuilderImpl(String[] fields) {
+    public GroupByBuilderImpl(String[] fields, QueryImpl query) {
         this.fields = fields;
+        this.query = query;
+        this.query.setGroupByBuilder(this);
     }
 
     @Override
-    public Select.OrderByBuilder orderBy(String field, Direction direction) {
-        return new OrderByBuilderImpl(field, direction);
+    public OrderByBuilder orderBy(Order... orders) {
+        return new OrderByBuilderImpl(query, orders);
     }
 
     @Override
-    public Query build() {
-        return null;
+    public QueryImpl build() {
+        return query;
+    }
+
+    public String[] getFields() {
+        return fields;
     }
 }

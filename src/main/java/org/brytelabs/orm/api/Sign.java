@@ -1,4 +1,4 @@
-package org.brytelabs.orm.core.operations;
+package org.brytelabs.orm.api;
 
 public enum Sign {
     EQUAL(" = "),
@@ -8,9 +8,13 @@ public enum Sign {
     GREATER_THAN_OR_EQUAL(" >= "),
     IN(" in ");
 
-    final String value;
+    private final String value;
 
     Sign(String value) {
         this.value = value;
+    }
+
+    public String getValue() {
+        return value;
     }
 }

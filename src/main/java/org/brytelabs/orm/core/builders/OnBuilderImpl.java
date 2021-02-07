@@ -1,23 +1,30 @@
 package org.brytelabs.orm.core.builders;
 
-import org.brytelabs.orm.core.Field;
-import org.brytelabs.orm.core.Query;
-import org.brytelabs.orm.core.Select;
+import org.brytelabs.orm.api.OnBuilder;
+import org.brytelabs.orm.api.WhereBuilder;
+import org.brytelabs.orm.core.domain.JoinCondition;
 
-public class OnBuilderImpl implements Select.OnBuilder {
-    private final Field joinField;
+public final class OnBuilderImpl implements OnBuilder {
+    private final JoinCondition condition;
+    private final QueryImpl query;
 
-    public OnBuilderImpl(Field joinField) {
-        this.joinField = joinField;
+    public OnBuilderImpl(JoinCondition condition, QueryImpl query) {
+        this.condition = condition;
+        this.query = query;
+        this.query.setOnBuilder(this);
     }
 
     @Override
-    public Select.WhereBuilder where(String field) {
-        return new WhereBuilderImpl(field);
+    public WhereBuilder where(String field) {
+        return new WhereBuilderImpl(field, query);
+    }
+
+    public JoinCondition getCondition() {
+        return condition;
     }
 
     @Override
-    public Query build() {
-        return null;
+    public QueryImpl build() {
+        return query;
     }
 }

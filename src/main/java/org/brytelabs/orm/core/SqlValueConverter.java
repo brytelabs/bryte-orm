@@ -1,10 +1,6 @@
 package org.brytelabs.orm.core;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,26 +11,15 @@ public class SqlValueConverter {
             return "null";
         }
 
-        if (val instanceof Number) {
+        if (val instanceof Number || val instanceof Boolean) {
             return String.valueOf(val);
         }
 
-        String format = "'%s'";
-        if (val instanceof LocalDate) {
-            return String.format(format, DateTimeFormatter.ISO_LOCAL_DATE.format((LocalDate) val));
-        }
-        if (val instanceof LocalDateTime) {
-            return String.format(format, DateTimeFormatter.ISO_LOCAL_DATE_TIME.format((LocalDateTime) val));
-        }
-        if (val instanceof Instant) {
-            return String.format(format, DateTimeFormatter.ISO_INSTANT.format((Instant) val));
-        }
-        if (val instanceof ZonedDateTime) {
-            Instant instant = ((ZonedDateTime) val).toInstant();
-            return String.format(format, DateTimeFormatter.ISO_INSTANT.format(instant));
-        }
+        return String.format("'%s'", val);
+    }
 
-        return String.format(format, val);
+    public static String quoteList(Object... values) {
+        return quoteList(Arrays.asList(values));
     }
 
     public static String quoteList(List<?> list) {
