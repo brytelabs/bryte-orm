@@ -40,9 +40,19 @@ public final class WhereBuilderImpl implements WhereBuilder {
         return createConjunctionBuilder(value, Sign.GREATER_THAN);
     }
 
+    @Override
+    public ConjunctionBuilder lt(Object value) {
+        return createConjunctionBuilder(value, Sign.LESS_THAN);
+    }
+
+    @Override
+    public ConjunctionBuilder lte(Object value) {
+        return createConjunctionBuilder(value, Sign.LESS_THAN_OR_EQUAL);
+    }
+
     private ConjunctionBuilder createConjunctionBuilder(Object value, Sign sign) {
         Expression expression = new Expression(sign, field, value);
-        LinkedConjunction current = linkedConjunction.next();
+        LinkedConjunction current = linkedConjunction.getNext();
         if (current.getLeft() == null) {
             current.setLeft(expression);
         }

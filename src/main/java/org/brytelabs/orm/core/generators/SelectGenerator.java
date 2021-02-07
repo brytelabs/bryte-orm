@@ -1,9 +1,13 @@
 package org.brytelabs.orm.core.generators;
 
 import org.brytelabs.orm.api.Field;
+import org.brytelabs.orm.api.SelectBuilder;
+import org.brytelabs.orm.api.Table;
 import org.brytelabs.orm.core.builders.SelectBuilderImpl;
 import org.brytelabs.orm.core.operations.SelectOperation;
 import org.brytelabs.orm.exceptions.SqlQueryException;
+import org.brytelabs.orm.utils.ExceptionUtils;
+import org.brytelabs.orm.utils.SqlUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -12,8 +16,12 @@ import java.util.stream.Collectors;
 public class SelectGenerator implements Generator {
     private final SelectBuilderImpl selectBuilder;
 
-    public SelectGenerator(SelectBuilderImpl selectBuilder) {
-        this.selectBuilder = selectBuilder;
+    public SelectGenerator(SelectBuilder selectBuilder) {
+        this.selectBuilder = (SelectBuilderImpl) selectBuilder;
+    }
+
+    @Override
+    public void validate() throws SqlQueryException {
         Objects.requireNonNull(selectBuilder, "SelectBuilder is required");
         Objects.requireNonNull(selectBuilder.getSelectOperation(), "SelectOperation is required for query");
         Objects.requireNonNull(selectBuilder.getTable(), "Table is required for query");
@@ -26,33 +34,34 @@ public class SelectGenerator implements Generator {
             case ALL:
                 sb.append("*"); break;
             case FIELDS:
-                sb.append(delimitFields(selectBuilder.getFields())); break;
-            case COUNT:
-            case AVG:
-            case MAX:
-            case MIN:
-            case SUM:
-                sb.append(quoteAggregateOperation(selectBuilder.getSelectOperation(), selectBuilder.getFields()));
-                break;
+                sb.append(delimitFields(selectBuilder.getFields(), selectBuilder.getTable())); break;
             default:
-                throw new SqlQueryException(selectBuilder.getSelectOperation() + " is not supported");
+                sb.append(quoteAggregateOperation(selectBuilder.getSelectOperation(), selectBuilder.getFields(), selectBuilder.getTable()));
         }
         return sb.append(" from ").append(selectBuilder.getTable()).toString();
     }
 
-    private String quoteAggregateOperation(SelectOperation operation, List<Field> fields) {
-        if (fields == null || fields.size() > 1) {
-            throw new SqlQueryException("Aggregate operation " + operation + " requires 1 field");
+    private String quoteAggregateOperation(SelectOperation operation, List<Field> fields, Table table) {
+        ExceptionUtils.passOrThrow(fields,
+                () -> "Aggregate operation " + operation + " requires 1 field",
+                f -> f.size() > 1);
+
+        Field field = fields.get(0);
+        if (field.getName().equals("*") || SqlUtils.isAliased(field.getName())) {
+            return operation.getValue() + "(" + field.forSelect() + ")";
         }
-        return operation.getValue() + "(" + fields.get(0) + ")";
+
+        return String.format("%s(%s.%s)", operation.getValue(), table.getAlias(), field.forSelect());
     }
 
-    private String delimitFields(List<Field> fields) {
+    private String delimitFields(List<Field> fields, Table table) {
         if (fields == null) {
             throw new SqlQueryException("At least 1 field is required for select with fields");
         }
         return fields.stream()
-                .map(Field::toString)
+                .map(f -> SqlUtils.isAliased(f.getName())
+                        ? f.forSelect()
+                        : table.getAlias() + "." + f.forSelect())
                 .collect(Collectors.joining(", "));
     }
 }

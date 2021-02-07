@@ -9,5 +9,13 @@ public interface OrderBy extends Terminable {
         return orderBy(Order.desc(field));
     }
 
+    default OrderByBuilder orderAsc(Field field) {
+        return orderBy(Order.asc(field));
+    }
+
+    default OrderByBuilder orderDesc(Field field) {
+        return orderBy(Order.desc(field));
+    }
+
     OrderByBuilder orderBy(Order... orders);
 }

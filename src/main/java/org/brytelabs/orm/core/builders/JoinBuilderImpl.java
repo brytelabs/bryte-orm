@@ -23,4 +23,11 @@ public final class JoinBuilderImpl implements JoinBuilder {
         return new OnBuilderImpl(condition, query);
     }
 
+    public Table getJoinedTable() {
+        return joinedTable;
+    }
+
+    public JoinOperation getOperation() {
+        return operation;
+    }
 }

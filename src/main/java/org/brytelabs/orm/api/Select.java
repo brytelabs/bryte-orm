@@ -17,6 +17,10 @@ public class Select {
         return new SelectBuilderImpl(SelectOperation.ALL, table);
     }
 
+    public static SelectBuilder from(String table, String... fields) {
+        return new SelectBuilderImpl(SelectOperation.FIELDS, Table.with(table), fields);
+    }
+
     public static SelectBuilder from(Table table, String... fields) {
         return new SelectBuilderImpl(SelectOperation.FIELDS, table, fields);
     }
@@ -26,11 +30,15 @@ public class Select {
     }
 
     public static SelectBuilder count(String table) {
-        return count(Table.with(table));
+        return count(Table.with(table), "*");
     }
 
     public static SelectBuilder count(Table table) {
         return new SelectBuilderImpl(SelectOperation.COUNT, table);
+    }
+
+    public static SelectBuilder count(String table, String field) {
+        return count(Table.with(table), field);
     }
 
     public static SelectBuilder count(Table table, String field) {

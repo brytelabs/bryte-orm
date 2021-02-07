@@ -11,6 +11,8 @@ import org.brytelabs.orm.core.domain.LinkedConjunction;
 import org.brytelabs.orm.core.operations.ConjunctionOperation;
 import org.brytelabs.orm.api.Order;
 
+import java.util.Arrays;
+
 public final class ConjunctionBuilderImpl implements ConjunctionBuilder {
     private final LinkedConjunction linkedConjunction;
     private final QueryImpl query;
