@@ -2,9 +2,9 @@ name: Test and Build
 on: push
 
 jobs:
-  runner-job:
+  setup-docker:
     runs-on: ubuntu-latest
-    service:
+    services:
       postgres:
         image: postgres:10
         env:
