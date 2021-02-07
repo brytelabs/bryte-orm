@@ -32,8 +32,10 @@ test {
     useJUnitPlatform()
 }
 
-dockerCompose.isRequiredBy(test)
-dockerCompose {
-    useComposeFiles = ['./docker/docker-compose.yml']
-    stopContainers = false
+if (!Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS"))) {
+    dockerCompose.isRequiredBy(test)
+    dockerCompose {
+        useComposeFiles = ['./docker/docker-compose.yml']
+        stopContainers = false
+    }
 }
