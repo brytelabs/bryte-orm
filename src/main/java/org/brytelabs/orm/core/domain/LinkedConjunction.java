@@ -23,7 +23,7 @@ public class LinkedConjunction {
         return next != null;
     }
 
-    public LinkedConjunction next() {
+    public LinkedConjunction getNext() {
         if (!hasNext()) {
             return this;
         }

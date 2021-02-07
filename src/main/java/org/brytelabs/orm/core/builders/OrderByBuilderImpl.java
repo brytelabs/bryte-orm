@@ -1,5 +1,6 @@
 package org.brytelabs.orm.core.builders;
 
+import org.brytelabs.orm.api.Field;
 import org.brytelabs.orm.api.LimitBuilder;
 import org.brytelabs.orm.api.OffsetBuilder;
 import org.brytelabs.orm.api.OrderByBuilder;
@@ -14,7 +15,7 @@ public final class OrderByBuilderImpl implements OrderByBuilder {
     private final List<Order> orders;
     private final QueryImpl query;
 
-    public OrderByBuilderImpl(String field, Direction direction, QueryImpl query) {
+    public OrderByBuilderImpl(Field field, Direction direction, QueryImpl query) {
         this(query, Order.of(field, direction));
     }
 
