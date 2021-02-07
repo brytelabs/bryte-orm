@@ -10,8 +10,22 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  setup-docker:
     runs-on: ubuntu-latest
+    service:
+      postgres:
+        image: postgres:10
+        env:
+          POSTGRES_DB: test
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test1234
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 15432:5432
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8

@@ -14,7 +14,7 @@ public class BaseIntTest {
 
     @BeforeAll
     public void setupConnection() throws SQLException {
-        connection = DriverManager.getConnection("jdbc:postgresql//localhost:15432/test", "test", "test1234");
+        connection = DriverManager.getConnection("jdbc:postgresql://localhost:15432/test", "test", "test1234");
     }
 
     @AfterAll
