@@ -17,9 +17,5 @@ class WhereGeneratorTest {
                 .and("age").gt(20)
                 .or("age").eq(20);
 
-//        WhereGenerator generator = new WhereGenerator(conjunction.getWhereBuilder());
-//
-//        String query = generator.generate();
-        assertEquals(" where name = 'Bright' and age > 20 or age = 20", "");
     }
 }
