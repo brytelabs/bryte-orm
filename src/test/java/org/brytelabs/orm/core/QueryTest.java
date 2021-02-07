@@ -1,13 +1,14 @@
 package org.brytelabs.orm.core;
 
-import org.brytelabs.orm.core.builders.QueryBuilder;
-import org.brytelabs.orm.core.operations.Order;
+import org.brytelabs.orm.api.Select;
+import org.brytelabs.orm.api.Query;
+import org.brytelabs.orm.api.Order;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class SqlTest {
+class QueryTest {
 
 //    @Test
 //    public void selectAll() {
@@ -35,14 +36,14 @@ class SqlTest {
 
     @Test
     public void selectWithWhere() {
-        QueryBuilder queryBuilder = new Sql().select(Table.with("accrual", "ac"))
-                .leftJoin(Table.with("daily_balance_snapshot", "dbs"))
-                .on("dbs.profile_id", "ac.profile_id")
+        Query query = Select.from("accrual")
+                .leftJoin("daily_balance_snapshot")
+                .on("profile_id", "profile_id")
                 .where("name").eq("Bright")
                 .or("age").gt(20)
                 .groupBy("name")
                 .orderBy(Order.asc("id"), Order.desc("age"))
                 .build();
-        assertNotNull(queryBuilder);
+        assertNotNull(query);
     }
 }

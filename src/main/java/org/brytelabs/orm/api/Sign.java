@@ -1,4 +1,4 @@
-package org.brytelabs.orm.core.operations;
+package org.brytelabs.orm.api;
 
 public enum Sign {
     EQUAL(" = "),

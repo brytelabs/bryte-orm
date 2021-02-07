@@ -1,6 +1,6 @@
 package org.brytelabs.orm.core.generators;
 
-import org.brytelabs.orm.core.Field;
+import org.brytelabs.orm.api.Field;
 import org.brytelabs.orm.core.builders.SelectBuilderImpl;
 import org.brytelabs.orm.core.operations.SelectOperation;
 import org.brytelabs.orm.exceptions.SqlQueryException;

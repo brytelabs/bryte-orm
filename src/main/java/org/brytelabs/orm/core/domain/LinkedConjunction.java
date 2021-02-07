@@ -3,7 +3,6 @@ package org.brytelabs.orm.core.domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.brytelabs.orm.core.Expression;
 import org.brytelabs.orm.core.operations.ConjunctionOperation;
 
 @Data

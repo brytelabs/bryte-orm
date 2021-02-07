@@ -1,21 +1,22 @@
 package org.brytelabs.orm.core.builders;
 
-import org.brytelabs.orm.core.JoinCondition;
-import org.brytelabs.orm.core.Select;
+import org.brytelabs.orm.api.OnBuilder;
+import org.brytelabs.orm.api.WhereBuilder;
+import org.brytelabs.orm.core.domain.JoinCondition;
 
-public class OnBuilderImpl implements Select.OnBuilder {
+public final class OnBuilderImpl implements OnBuilder {
     private final JoinCondition condition;
-    private final QueryBuilder queryBuilder;
+    private final QueryImpl query;
 
-    public OnBuilderImpl(JoinCondition condition, QueryBuilder queryBuilder) {
+    public OnBuilderImpl(JoinCondition condition, QueryImpl query) {
         this.condition = condition;
-        this.queryBuilder = queryBuilder;
-        this.queryBuilder.setOnBuilder(this);
+        this.query = query;
+        this.query.setOnBuilder(this);
     }
 
     @Override
-    public Select.WhereBuilder where(String field) {
-        return new WhereBuilderImpl(field, queryBuilder);
+    public WhereBuilder where(String field) {
+        return new WhereBuilderImpl(field, query);
     }
 
     public JoinCondition getCondition() {
@@ -23,7 +24,7 @@ public class OnBuilderImpl implements Select.OnBuilder {
     }
 
     @Override
-    public QueryBuilder build() {
-        return queryBuilder;
+    public QueryImpl build() {
+        return query;
     }
 }

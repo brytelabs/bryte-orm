@@ -1,24 +1,33 @@
 package org.brytelabs.orm;
 
-import org.brytelabs.orm.core.operations.Direction;
-import org.brytelabs.orm.core.QueryExecutor;
-import org.brytelabs.orm.core.Sql;
+import org.brytelabs.orm.api.Query;
+import org.brytelabs.orm.api.QueryExecutor;
+import org.brytelabs.orm.api.Select;
 import org.junit.jupiter.api.Test;
 
 class SqlQueryExecutorTest extends BaseIntTest {
-    private QueryExecutor executor = new SqlQueryExecutor(connection);
 
     @Test
     public void findOne() {
-        new Sql().select("some_table")
+        QueryExecutor executor = new SqlQueryExecutor(connection);
+        Query query = Select.from("some_table")
                 .where("field1").eq(1)
                 .and("field2").eq("value2")
                 .or("field2").eq("value3")
                 .orderAsc("fsss")
+                .offset(1)
+                .limit(10)
                 .build();
-//        Sql.select("account")
-//                .where("username").eq("something")
-//                .and("age").eq("")
-//                .
+
+        Query q2 = Select.count("some_table")
+                .subQuery(Select.from("some_table")
+                        .innerJoin("next_table")
+                        .on("id", "next_table_id")
+                        .where("age").gt(3)
+                        .or("age").eq(9))
+                .limit(100)
+                .build();
+
+        System.out.println(query);
     }
 }

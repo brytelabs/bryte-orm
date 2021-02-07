@@ -1,12 +1,6 @@
 package org.brytelabs.orm.core.generators;
 
-import org.brytelabs.orm.core.Expression;
-import org.brytelabs.orm.core.SqlValueConverter;
-import org.brytelabs.orm.core.builders.ConjunctionBuilderImpl;
 import org.brytelabs.orm.core.builders.WhereBuilderImpl;
-import org.brytelabs.orm.exceptions.SqlQueryException;
-
-import java.util.List;
 
 public class WhereGenerator implements Generator {
     private final WhereBuilderImpl whereBuilder;

@@ -1,40 +1,46 @@
 package org.brytelabs.orm.core.builders;
 
-import org.brytelabs.orm.core.Expression;
-import org.brytelabs.orm.core.Select;
+import org.brytelabs.orm.api.ConjunctionBuilder;
+import org.brytelabs.orm.api.Field;
+import org.brytelabs.orm.api.Sign;
+import org.brytelabs.orm.api.WhereBuilder;
+import org.brytelabs.orm.core.domain.Expression;
 import org.brytelabs.orm.core.domain.LinkedConjunction;
 import org.brytelabs.orm.core.operations.ConjunctionOperation;
-import org.brytelabs.orm.core.operations.Sign;
 
-public class WhereBuilderImpl implements Select.WhereBuilder {
+public final class WhereBuilderImpl implements WhereBuilder {
     private final LinkedConjunction linkedConjunction;
-    private final String field;
+    private final Field field;
     private final ConjunctionOperation conjunctionOperation;
-    private final QueryBuilder queryBuilder;
+    private final QueryImpl query;
 
-    public WhereBuilderImpl(String field, QueryBuilder queryBuilder) {
-        this(field, null, new LinkedConjunction(), queryBuilder);
+    public WhereBuilderImpl(String field, QueryImpl query) {
+        this(Field.with(field), null, new LinkedConjunction(), query);
     }
 
-    WhereBuilderImpl(String field, ConjunctionOperation conjunctionOperation, LinkedConjunction linkedConjunction, QueryBuilder queryBuilder) {
+    public WhereBuilderImpl(Field field, QueryImpl query) {
+        this(field, null, new LinkedConjunction(), query);
+    }
+
+    WhereBuilderImpl(Field field, ConjunctionOperation conjunctionOperation, LinkedConjunction linkedConjunction, QueryImpl query) {
         this.field = field;
         this.conjunctionOperation = conjunctionOperation;
         this.linkedConjunction = linkedConjunction;
-        this.queryBuilder = queryBuilder;
-        this.queryBuilder.setWhereBuilder(this);
+        this.query = query;
+        this.query.setWhereBuilder(this);
     }
 
     @Override
-    public Select.ConjunctionBuilder eq(Object value) {
+    public ConjunctionBuilder eq(Object value) {
         return createConjunctionBuilder(value, Sign.EQUAL);
     }
 
     @Override
-    public Select.ConjunctionBuilder gt(Object value) {
+    public ConjunctionBuilder gt(Object value) {
         return createConjunctionBuilder(value, Sign.GREATER_THAN);
     }
 
-    private Select.ConjunctionBuilder createConjunctionBuilder(Object value, Sign sign) {
+    private ConjunctionBuilder createConjunctionBuilder(Object value, Sign sign) {
         Expression expression = new Expression(sign, field, value);
         LinkedConjunction current = linkedConjunction.next();
         if (current.getLeft() == null) {
@@ -49,7 +55,7 @@ public class WhereBuilderImpl implements Select.WhereBuilder {
             current.setNext(new LinkedConjunction(expression));
         }
 
-        return new ConjunctionBuilderImpl(linkedConjunction, queryBuilder);
+        return new ConjunctionBuilderImpl(linkedConjunction, query);
     }
 
     public LinkedConjunction getLinkedConjunction() {

@@ -1,4 +1,4 @@
-package org.brytelabs.orm.core;
+package org.brytelabs.orm.api;
 
 import lombok.Value;
 

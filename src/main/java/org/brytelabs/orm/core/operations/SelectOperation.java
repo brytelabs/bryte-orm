@@ -1,5 +1,7 @@
 package org.brytelabs.orm.core.operations;
 
+import lombok.Getter;
+
 public enum SelectOperation {
     ALL("*"),
     FIELDS(""),
@@ -9,13 +11,10 @@ public enum SelectOperation {
     MAX("max"),
     MIN("min");
 
+    @Getter
     private final String value;
 
     SelectOperation(String value) {
         this.value = value;
-    }
-
-    public String getValue() {
-        return value;
     }
 }

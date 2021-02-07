@@ -1,24 +1,26 @@
 package org.brytelabs.orm.core.builders;
 
-import org.brytelabs.orm.core.JoinCondition;
-import org.brytelabs.orm.core.Select;
-import org.brytelabs.orm.core.Table;
+import org.brytelabs.orm.api.JoinBuilder;
+import org.brytelabs.orm.api.OnBuilder;
+import org.brytelabs.orm.core.domain.JoinCondition;
+import org.brytelabs.orm.api.Table;
 import org.brytelabs.orm.core.operations.JoinOperation;
 
-public class JoinBuilderImpl implements Select.JoinBuilder {
+public final class JoinBuilderImpl implements JoinBuilder {
     private final Table joinedTable;
     private final JoinOperation operation;
-    private final QueryBuilder queryBuilder;
+    private final QueryImpl query;
 
-    public JoinBuilderImpl(Table joinedTable, JoinOperation operation, QueryBuilder queryBuilder) {
+    public JoinBuilderImpl(Table joinedTable, JoinOperation operation, QueryImpl query) {
         this.joinedTable = joinedTable;
         this.operation = operation;
-        this.queryBuilder = queryBuilder;
-        this.queryBuilder.setJoinBuilder(this);
+        this.query = query;
+        this.query.setJoinBuilder(this);
     }
 
     @Override
-    public Select.OnBuilder on(JoinCondition condition) {
-        return new OnBuilderImpl(condition, queryBuilder);
+    public OnBuilder on(JoinCondition condition) {
+        return new OnBuilderImpl(condition, query);
     }
+
 }

@@ -1,29 +1,45 @@
 package org.brytelabs.orm.core.builders;
 
-import org.brytelabs.orm.core.operations.Direction;
-import org.brytelabs.orm.core.Select;
-import org.brytelabs.orm.core.operations.Order;
+import org.brytelabs.orm.api.LimitBuilder;
+import org.brytelabs.orm.api.OffsetBuilder;
+import org.brytelabs.orm.api.OrderByBuilder;
+import org.brytelabs.orm.api.Direction;
+import org.brytelabs.orm.api.Order;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class OrderByBuilderImpl implements Select.OrderByBuilder {
+public final class OrderByBuilderImpl implements OrderByBuilder {
     private final List<Order> orders;
-    private final QueryBuilder queryBuilder;
+    private final QueryImpl query;
 
-    public OrderByBuilderImpl(String field, Direction direction, QueryBuilder queryBuilder) {
-        this(queryBuilder, Order.of(field, direction));
+    public OrderByBuilderImpl(String field, Direction direction, QueryImpl query) {
+        this(query, Order.of(field, direction));
     }
 
-    public OrderByBuilderImpl(QueryBuilder queryBuilder, Order... orders) {
+    public OrderByBuilderImpl(QueryImpl query, Order... orders) {
         this. orders = Stream.of(orders).collect(Collectors.toList());
-        this.queryBuilder = queryBuilder;
-        this.queryBuilder.setOrderByBuilder(this);
+        this.query = query;
+        this.query.setOrderByBuilder(this);
     }
 
     @Override
-    public QueryBuilder build() {
-        return queryBuilder;
+    public LimitBuilder limit(int limit) {
+        return new LimitBuilderImpl(limit, query);
+    }
+
+    @Override
+    public OffsetBuilder offset(int offset) {
+        return new OffsetBuilderImpl(offset, query);
+    }
+
+    @Override
+    public QueryImpl build() {
+        return query;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
     }
 }
