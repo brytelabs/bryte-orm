@@ -64,7 +64,7 @@ public class SqlQueryExecutor implements QueryExecutor {
             log.info(sql);
         }
 
-        try {
+        return ExceptionUtils.toDataAccessException(() -> {
             final List<T> list = new ArrayList<>();
             CallableStatement statement = connection.prepareCall(sql);
             ResultSet resultSet = statement.executeQuery();
@@ -83,10 +83,7 @@ public class SqlQueryExecutor implements QueryExecutor {
                 resultSet.next();
             }
             return list;
-        } catch (Throwable e) {
-            e.printStackTrace();
-            throw new DataAccessException(e.getMessage(), e);
-        }
+        });
     }
 
     private Result resultSetToResult(ResultSet resultSet) throws SQLException {

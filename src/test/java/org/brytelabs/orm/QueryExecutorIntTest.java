@@ -6,6 +6,7 @@ import org.brytelabs.orm.api.Query;
 import org.brytelabs.orm.api.Select;
 import org.brytelabs.orm.api.Table;
 import org.brytelabs.orm.core.RowMapper;
+import org.brytelabs.orm.exceptions.DataAccessException;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -31,9 +32,14 @@ public class QueryExecutorIntTest extends BaseIntTest {
         QueryExecutor executor = new SqlQueryExecutor(connection, true);
 
         Query query = Select.from("employee").build();
-        List<Employee> employees = executor.findList(query, employeeMapper);
+        List<Employee> employees = null;
+        try {
+            employees = executor.findList(query, employeeMapper);
 
-        assertEquals(employees.size(), 200);
+            assertEquals(employees.size(), 200);
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
 
         query = Select.from(Table.with("employee", "e"))
                 .where("gender").eq(Gender.MALE)
