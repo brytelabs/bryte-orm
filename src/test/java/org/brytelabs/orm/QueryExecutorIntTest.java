@@ -28,15 +28,10 @@ public class QueryExecutorIntTest extends BaseIntTest {
             .salary(row.getBigDecimal("salary"))
             .build();
 
-    private QueryExecutor executor;
-
-    @BeforeAll
-    public void setup() {
-        executor = new SqlQueryExecutor(connection, true);
-    }
-
     @Test
     public void selectAll() {
+        QueryExecutor executor = new SqlQueryExecutor(connection, true);
+
         Query query = Select.from("employee").build();
         List<Employee> employees = executor.findList(query, employeeMapper);
 
