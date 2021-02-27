@@ -1,7 +1,6 @@
 package org.brytelabs.orm;
 
 import org.brytelabs.orm.api.Query;
-import org.brytelabs.orm.api.QueryExecutor;
 import org.brytelabs.orm.core.RowMapper;
 import org.brytelabs.orm.core.domain.Result;
 import org.brytelabs.orm.core.generators.Generator;
@@ -65,7 +64,7 @@ public class SqlQueryExecutor implements QueryExecutor {
             log.info(sql);
         }
 
-        return ExceptionUtils.toDataAccessException(() -> {
+        try {
             final List<T> list = new ArrayList<>();
             CallableStatement statement = connection.prepareCall(sql);
             ResultSet resultSet = statement.executeQuery();
@@ -84,7 +83,10 @@ public class SqlQueryExecutor implements QueryExecutor {
                 resultSet.next();
             }
             return list;
-        });
+        } catch (Throwable e) {
+            e.printStackTrace();
+            throw new DataAccessException(e.getMessage(), e);
+        }
     }
 
     private Result resultSetToResult(ResultSet resultSet) throws SQLException {

@@ -3,11 +3,9 @@ package org.brytelabs.orm;
 import org.brytelabs.orm.Employee.Gender;
 import org.brytelabs.orm.Employee.MaritalStatus;
 import org.brytelabs.orm.api.Query;
-import org.brytelabs.orm.api.QueryExecutor;
 import org.brytelabs.orm.api.Select;
 import org.brytelabs.orm.api.Table;
 import org.brytelabs.orm.core.RowMapper;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
