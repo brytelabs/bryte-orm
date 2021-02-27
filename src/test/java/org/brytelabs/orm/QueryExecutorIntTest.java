@@ -31,16 +31,14 @@ public class QueryExecutorIntTest extends BaseIntTest {
     public void selectAll() {
         QueryExecutor executor = new SqlQueryExecutor(connection, true);
 
-        Query query = Select.from("employee").build();
-        List<Employee> employees = null;
-        try {
-            employees = executor.findList(query, employeeMapper);
+        DataAccessException error = assertThrows(DataAccessException.class, () -> executor.findList(
+                Select.from("employee").build(), employeeMapper));
+        assertEquals(error.getMessage(), "hello error");
 
-            assertEquals(employees.size(), 200);
-        } catch (DataAccessException e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-        }
+        Query query = Select.from("employee").build();
+        List<Employee> employees = executor.findList(query, employeeMapper);
+
+        assertEquals(employees.size(), 200);
 
         query = Select.from(Table.with("employee", "e"))
                 .where("gender").eq(Gender.MALE)
