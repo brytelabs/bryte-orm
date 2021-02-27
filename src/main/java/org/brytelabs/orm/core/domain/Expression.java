@@ -4,7 +4,10 @@ import lombok.Getter;
 import org.brytelabs.orm.api.Field;
 import org.brytelabs.orm.api.Sign;
 import org.brytelabs.orm.api.Table;
+import org.brytelabs.orm.exceptions.DataAccessException;
 import org.brytelabs.orm.utils.SqlUtils;
+
+import java.util.List;
 
 @Getter
 public class Expression {
@@ -26,6 +29,21 @@ public class Expression {
         return String.format("%s%s%s",
                 field.forCondition(selectedTable),
                 sign.getValue(),
-                SqlUtils.quoteParam(value));
+                formatValue());
+    }
+
+    @SuppressWarnings("unchecked")
+    private String formatValue() {
+        if (sign == Sign.BETWEEN) {
+            if (!(value instanceof List)) {
+                throw new DataAccessException("between requires a list");
+            }
+            List<Object> values = (List<Object>) value;
+            if (values.size() != 2) {
+                throw new DataAccessException("between received list with size " + values.size() + " but requires 2");
+            }
+            return SqlUtils.quoteParam(values.get(0)) + " and " + SqlUtils.quoteParam(values.get(1));
+        }
+        return SqlUtils.quoteParam(value);
     }
 }

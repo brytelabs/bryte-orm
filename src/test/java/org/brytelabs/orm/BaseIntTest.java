@@ -18,7 +18,7 @@ public class BaseIntTest {
     }
 
     @AfterAll
-    public void cleanup() {
-
+    public void cleanup() throws SQLException {
+        connection.close();
     }
 }

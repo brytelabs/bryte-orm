@@ -8,6 +8,9 @@ import org.brytelabs.orm.core.domain.Expression;
 import org.brytelabs.orm.core.domain.LinkedConjunction;
 import org.brytelabs.orm.core.operations.ConjunctionOperation;
 
+import java.util.Arrays;
+import java.util.List;
+
 public final class WhereBuilderImpl implements WhereBuilder {
     private final LinkedConjunction linkedConjunction;
     private final Field field;
@@ -36,6 +39,21 @@ public final class WhereBuilderImpl implements WhereBuilder {
     }
 
     @Override
+    public ConjunctionBuilder isNull() {
+        return createConjunctionBuilder(null, Sign.EQUAL);
+    }
+
+    @Override
+    public ConjunctionBuilder notEq(Object value) {
+        return createConjunctionBuilder(value, Sign.NOT_EQUAL);
+    }
+
+    @Override
+    public ConjunctionBuilder notNull() {
+        return notEq(null);
+    }
+
+    @Override
     public ConjunctionBuilder gt(Object value) {
         return createConjunctionBuilder(value, Sign.GREATER_THAN);
     }
@@ -48,6 +66,36 @@ public final class WhereBuilderImpl implements WhereBuilder {
     @Override
     public ConjunctionBuilder lte(Object value) {
         return createConjunctionBuilder(value, Sign.LESS_THAN_OR_EQUAL);
+    }
+
+    @Override
+    public ConjunctionBuilder gte(Object value) {
+        return createConjunctionBuilder(value, Sign.GREATER_THAN_OR_EQUAL);
+    }
+
+    @Override
+    public ConjunctionBuilder between(Object value1, Object value2) {
+        return createConjunctionBuilder(Arrays.asList(value1, value2), Sign.BETWEEN);
+    }
+
+    @Override
+    public ConjunctionBuilder in(Object... values) {
+        return createConjunctionBuilder(Arrays.asList(values), Sign.IN);
+    }
+
+    @Override
+    public ConjunctionBuilder in(List<?> values) {
+        return createConjunctionBuilder(values, Sign.IN);
+    }
+
+    @Override
+    public ConjunctionBuilder notIn(Object... values) {
+        return createConjunctionBuilder(Arrays.asList(values), Sign.NOT_IN);
+    }
+
+    @Override
+    public ConjunctionBuilder notIn(List<?> values) {
+        return createConjunctionBuilder(values, Sign.NOT_IN);
     }
 
     private ConjunctionBuilder createConjunctionBuilder(Object value, Sign sign) {
