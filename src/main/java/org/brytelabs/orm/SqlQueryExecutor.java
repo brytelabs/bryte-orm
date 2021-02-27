@@ -58,6 +58,7 @@ public class SqlQueryExecutor implements QueryExecutor {
 
     @Override
     public <T> List<T> findList(Query query, RowMapper<T> rowMapper) throws DataAccessException {
+        log.info("Got here and executing query generator");
         Generator generator = new QueryGenerator(query);
         String sql = generator.generate();
         if (showSql) {
@@ -68,6 +69,7 @@ public class SqlQueryExecutor implements QueryExecutor {
             final List<T> list = new ArrayList<>();
             CallableStatement statement = connection.prepareCall(sql);
             ResultSet resultSet = statement.executeQuery();
+            log.info("Results fetched " + resultSet.getFetchSize());
             if (resultSet.isBeforeFirst()) {
                 resultSet.next();
             }
