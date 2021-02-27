@@ -39,6 +39,7 @@ public class QueryExecutorIntTest extends BaseIntTest {
             assertEquals(employees.size(), 200);
         } catch (DataAccessException e) {
             e.printStackTrace();
+            System.out.println(e.getMessage());
         }
 
         query = Select.from(Table.with("employee", "e"))
