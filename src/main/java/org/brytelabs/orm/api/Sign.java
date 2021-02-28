@@ -8,7 +8,10 @@ public enum Sign {
     LESS_THAN_OR_EQUAL(" <= "),
     GREATER_THAN(" > "),
     GREATER_THAN_OR_EQUAL(" >= "),
-    IN(" in ");
+    BETWEEN(" between "),
+    IN(" in "),
+    NOT_IN(" not in "),
+    NOT_EQUAL(" != ");
 
     @Getter
     private final String value;

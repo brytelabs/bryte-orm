@@ -1,5 +1,6 @@
-package org.brytelabs.orm.api;
+package org.brytelabs.orm;
 
+import org.brytelabs.orm.api.Query;
 import org.brytelabs.orm.core.RowMapper;
 import org.brytelabs.orm.exceptions.DataAccessException;
 
