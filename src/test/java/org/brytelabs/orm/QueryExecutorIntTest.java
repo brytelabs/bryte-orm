@@ -7,6 +7,7 @@ import org.brytelabs.orm.api.Select;
 import org.brytelabs.orm.api.Table;
 import org.brytelabs.orm.core.RowMapper;
 import org.brytelabs.orm.exceptions.DataAccessException;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -31,6 +32,7 @@ public class QueryExecutorIntTest extends BaseIntTest {
             .build();
 
     @Test
+    @Disabled
     public void selectAll() {
         QueryExecutor executor = new SqlQueryExecutor(connection, true);
 
