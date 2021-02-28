@@ -1,4 +1,4 @@
-CREATE TABLE "employee"
+CREATE TABLE employee
 (
     id             SERIAL PRIMARY KEY,
     name           text        default NULL,
@@ -10,7 +10,7 @@ CREATE TABLE "employee"
     has_children   boolean
 );
 
-INSERT INTO "employee" (name, email, birth_date, salary, gender, marital_status, has_children)
+INSERT INTO employee (name, email, birth_date, salary, gender, marital_status, has_children)
 VALUES ('Jared Moses', 'fermentum.metus.Aenean@porttitorvulputateposuere.net', '1981-12-03', 4601, 'MALE', 'SINGLE',
         'true'),
        ('Finn Arnold', 'faucibus.lectus.a@risusMorbimetus.com', '1947-03-15', 1321, 'FEMALE', 'SINGLE', 'true'),

@@ -12,4 +12,4 @@ services:
       POSTGRES_PASSWORD: test1234
 
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ../.github/workflows/init.sql:/docker-entrypoint-initdb.d/init.sql
