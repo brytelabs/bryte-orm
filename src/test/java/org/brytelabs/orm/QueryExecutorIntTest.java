@@ -11,11 +11,14 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class QueryExecutorIntTest extends BaseIntTest {
+    private static final Logger log = Logger.getLogger(QueryExecutorIntTest.class.getName());
+
     private static final RowMapper<Employee> employeeMapper = (row) -> Employee.builder()
             .id(row.getLong("id"))
             .gender(Gender.valueOf(row.getString("gender")))
@@ -33,6 +36,9 @@ public class QueryExecutorIntTest extends BaseIntTest {
 
         DataAccessException error = assertThrows(DataAccessException.class, () -> executor.findList(
                 Select.from("employee").build(), employeeMapper));
+
+        log.info("Test should fail here....");
+        log.info(error.getMessage());
         assertEquals(error.getMessage(), "hello error");
 
         Query query = Select.from("employee").build();
