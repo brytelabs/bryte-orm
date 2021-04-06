@@ -9,30 +9,30 @@ import org.brytelabs.orm.core.operations.ConjunctionOperation;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LinkedConjunction {
-    private Expression left;
-    private Expression right;
-    private ConjunctionOperation operation;
-    private LinkedConjunction next;
-    private ConjunctionOperation nextOperation;
+  private Expression left;
+  private Expression right;
+  private ConjunctionOperation operation;
+  private LinkedConjunction next;
+  private ConjunctionOperation nextOperation;
 
-    public LinkedConjunction(Expression left) {
-        this.left = left;
+  public LinkedConjunction(Expression left) {
+    this.left = left;
+  }
+
+  public boolean hasNext() {
+    return next != null;
+  }
+
+  public LinkedConjunction getNext() {
+    if (!hasNext()) {
+      return this;
     }
 
-    public boolean hasNext() {
-        return next != null;
+    LinkedConjunction temp = next;
+    while (temp != null) {
+      if (temp.next == null) break;
+      temp = temp.next;
     }
-
-    public LinkedConjunction getNext() {
-        if (!hasNext()) {
-            return this;
-        }
-
-        LinkedConjunction temp = next;
-        while(temp != null) {
-            if (temp.next == null) break;
-            temp = temp.next;
-        }
-        return temp;
-    }
+    return temp;
+  }
 }

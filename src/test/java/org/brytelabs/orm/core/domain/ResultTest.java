@@ -1,47 +1,41 @@
 package org.brytelabs.orm.core.domain;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.math.BigDecimal;
 import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
+import java.time.ZoneOffset;
+import org.brytelabs.orm.Employee.Gender;
+import org.brytelabs.orm.Result;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 class ResultTest {
 
-    @Test
-    public void sqlValueResult() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("date", new Date(1614460980561L)); //Sat Feb 27 2021 21:23:00
-        map.put("timestamp", new Timestamp(1614460980561L)); //Sat Feb 27 2021 21:23:00
-        map.put("bool", true);
-        map.put("name", "Some Name");
-        map.put("decimal", BigDecimal.valueOf(200));
-        map.put("int", 1);
-        map.put("long", 1L);
-        map.put("null", null);
+  @Test
+  public void sqlValueResult() throws SQLException {
 
-        Result result = new Result(map);
+    Instant instant = Instant.now();
+    Timestamp timestamp = Timestamp.from(instant);
 
-        LocalDate localDate = LocalDate.of(2021, 2, 27);
-        LocalDateTime localDateTime = LocalDateTime.of(localDate, LocalTime.of(23, 23));
+    ResultSet resultSet = Mockito.mock(ResultSet.class);
+    Mockito.when(resultSet.getInt("int")).thenReturn(1);
+    Mockito.when(resultSet.getString("string")).thenReturn("MALE");
+    Mockito.when(resultSet.getTimestamp("timestamp")).thenReturn(timestamp);
+    Mockito.when(resultSet.getObject("obj")).thenReturn(timestamp);
+    Mockito.when(resultSet.getDate("date")).thenReturn(Date.valueOf("2020-01-31"));
+    Result result = new Result(resultSet);
 
-        assertNull(result.getOrNull("null", val -> "some value"));
-        assertEquals(result.getLong("long"), 1L);
-        assertEquals(result.getInt("int"), 1);
-        assertEquals(result.getBigDecimal("decimal"), BigDecimal.valueOf(200.0));
-        assertEquals(result.getString("name"), "Some Name");
-        assertTrue(result.getBoolean("bool"));
-        assertEquals(result.getLocalDate("date"), localDate);
-//        assertEquals(result.getLocalDateTime("timestamp").withNano(0), localDateTime);
-        assertEquals(result.getInstant("timestamp"), Instant.ofEpochMilli(1614460980561L));
-    }
-
+    assertEquals(result.getInt("int"), 1);
+    assertEquals(result.getString("string"), "MALE");
+    assertEquals(result.getEnum("string", Gender.class), Gender.MALE);
+    assertEquals(result.getLocalDate("date"), LocalDate.parse("2020-01-31"));
+    assertEquals(result.getLocalDateTime("timestamp"), timestamp.toLocalDateTime());
+    assertEquals(result.getInstant("obj"), instant);
+    assertEquals(result.getZonedDateTime("obj"), instant.atZone(ZoneOffset.UTC));
+  }
 }

@@ -7,6 +7,7 @@ buildscript {
 plugins {
     id 'java'
     id "com.avast.gradle.docker-compose" version "0.14.0"
+    id "com.diffplug.spotless" version "5.11.1"
 }
 
 apply plugin: 'docker-compose'
@@ -25,6 +26,7 @@ dependencies {
     testAnnotationProcessor lombok
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testImplementation 'org.postgresql:postgresql:42.2.18'
+    testImplementation 'org.mockito:mockito-core:3.8.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 
@@ -37,5 +39,13 @@ if (!Boolean.parseBoolean(System.getenv("GITHUB_ACTIONS"))) {
     dockerCompose {
         useComposeFiles = ['./docker/docker-compose.yml']
         stopContainers = false
+    }
+}
+
+spotless {
+    java {
+        importOrder()
+        removeUnusedImports()
+        googleJavaFormat()
     }
 }

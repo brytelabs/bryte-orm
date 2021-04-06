@@ -15,13 +15,13 @@ import org.brytelabs.orm.api.WhereBuilder;
 @Getter
 @Setter
 public final class QueryImpl implements Query {
-    private SelectBuilder selectBuilder;
-    private WhereBuilder whereBuilder;
-    private JoinBuilder joinBuilder;
-    private OrderByBuilder orderByBuilder;
-    private GroupByBuilder groupByBuilder;
-    private OnBuilder onBuilder;
-    private LimitBuilder limitBuilder;
-    private OffsetBuilder offsetBuilder;
-    private Query subQuery;
+  private SelectBuilder selectBuilder;
+  private WhereBuilder whereBuilder;
+  private JoinBuilder joinBuilder;
+  private OrderByBuilder orderByBuilder;
+  private GroupByBuilder groupByBuilder;
+  private OnBuilder onBuilder;
+  private LimitBuilder limitBuilder;
+  private OffsetBuilder offsetBuilder;
+  private Query subQuery;
 }

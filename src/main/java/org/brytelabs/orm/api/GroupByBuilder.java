@@ -1,4 +1,3 @@
 package org.brytelabs.orm.api;
 
-public interface GroupByBuilder extends OrderBy {
-}
+public interface GroupByBuilder extends OrderBy {}
