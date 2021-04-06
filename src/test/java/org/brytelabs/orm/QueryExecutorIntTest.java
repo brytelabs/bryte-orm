@@ -15,6 +15,7 @@ import org.brytelabs.orm.api.Query;
 import org.brytelabs.orm.api.Select;
 import org.brytelabs.orm.api.Table;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class QueryExecutorIntTest extends BaseIntTest {
@@ -124,6 +125,7 @@ public class QueryExecutorIntTest extends BaseIntTest {
   }
 
   @Test
+  @Disabled
   public void selectDistinct() {
     Query query =
         Select.from("employee", "distinct gender")
