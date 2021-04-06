@@ -2,6 +2,7 @@ package org.brytelabs.orm;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -116,11 +117,16 @@ public class QueryExecutorIntTest extends BaseIntTest {
               long count = rs.getLong(2);
               return new KeyValue<>(gender, count);
             });
+
     assertFalse(results.isEmpty());
-    assertEquals(results.get(0).key, "MALE");
-    assertEquals(results.get(0).value, 39L);
-    assertEquals(results.get(1).key, "FEMALE");
-    assertEquals(results.get(1).value, 53L);
+    KeyValue<String, Long> male =
+        results.stream().filter(r -> r.key.equals("MALE")).findFirst().orElse(null);
+    KeyValue<String, Long> female =
+        results.stream().filter(r -> r.key.equals("FEMALE")).findFirst().orElse(null);
+    assertNotNull(male);
+    assertNotNull(female);
+    assertEquals(male.value, 39L);
+    assertEquals(female.value, 53L);
   }
 
   @Test
