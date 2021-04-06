@@ -8,43 +8,45 @@ import org.brytelabs.orm.exceptions.SqlQueryException;
 import org.brytelabs.orm.utils.ExceptionUtils;
 
 public class WhereGenerator implements Generator {
-    private final WhereBuilderImpl whereBuilder;
-    private final Table fromTable;
+  private final WhereBuilderImpl whereBuilder;
+  private final Table fromTable;
 
-    public WhereGenerator(WhereBuilder whereBuilder, Table fromTable) {
-        this.whereBuilder = (WhereBuilderImpl) whereBuilder;
-        this.fromTable = fromTable;
+  public WhereGenerator(WhereBuilder whereBuilder, Table fromTable) {
+    this.whereBuilder = (WhereBuilderImpl) whereBuilder;
+    this.fromTable = fromTable;
+  }
+
+  @Override
+  public void validate() throws SqlQueryException {
+    ExceptionUtils.passOrThrowIfNull(whereBuilder, () -> "Where part of the query not found");
+    ExceptionUtils.passOrThrowIfNull(
+        whereBuilder.getLinkedConjunction(),
+        () -> "At least 1 condition is required under the where part");
+  }
+
+  @Override
+  public String generate() {
+    LinkedConjunction next = whereBuilder.getLinkedConjunction();
+    StringBuilder query = new StringBuilder("where ").append(formatLinkedConjunction(next));
+
+    while (next.hasNext()) {
+      next = next.getNext();
+      query.append(formatLinkedConjunction(next));
+      if (next.hasNext()) {
+        query.append(next.getNextOperation().getValue());
+      }
     }
 
-    @Override
-    public void validate() throws SqlQueryException {
-        ExceptionUtils.passOrThrowIfNull(whereBuilder, () -> "Where part of the query not found");
-        ExceptionUtils.passOrThrowIfNull(whereBuilder.getLinkedConjunction(), () -> "At least 1 condition is required under the where part");
+    return query.toString();
+  }
+
+  private String formatLinkedConjunction(LinkedConjunction conjunction) {
+    StringBuilder builder = new StringBuilder(conjunction.getLeft().format(fromTable));
+    if (conjunction.getRight() != null) {
+      builder
+          .append(conjunction.getOperation().getValue())
+          .append(conjunction.getRight().format(fromTable));
     }
-
-    @Override
-    public String generate() {
-        LinkedConjunction next = whereBuilder.getLinkedConjunction();
-        StringBuilder query = new StringBuilder("where ")
-                .append(formatLinkedConjunction(next));
-
-        while (next.hasNext()) {
-            next = next.getNext();
-            query.append(formatLinkedConjunction(next));
-            if (next.hasNext()) {
-                query.append(next.getNextOperation().getValue());
-            }
-        }
-
-        return query.toString();
-    }
-
-    private String formatLinkedConjunction(LinkedConjunction conjunction) {
-        StringBuilder builder = new StringBuilder(conjunction.getLeft().format(fromTable));
-        if (conjunction.getRight() != null) {
-            builder.append(conjunction.getOperation().getValue())
-                    .append(conjunction.getRight().format(fromTable));
-        }
-        return builder.toString();
-    }
+    return builder.toString();
+  }
 }

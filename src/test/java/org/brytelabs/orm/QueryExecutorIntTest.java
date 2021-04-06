@@ -1,72 +1,151 @@
 package org.brytelabs.orm;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import org.brytelabs.orm.Employee.Gender;
 import org.brytelabs.orm.Employee.MaritalStatus;
 import org.brytelabs.orm.api.Query;
 import org.brytelabs.orm.api.Select;
 import org.brytelabs.orm.api.Table;
-import org.brytelabs.orm.core.RowMapper;
-import org.brytelabs.orm.exceptions.DataAccessException;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 public class QueryExecutorIntTest extends BaseIntTest {
-    private static final Logger log = Logger.getLogger(QueryExecutorIntTest.class.getName());
 
-    private static final RowMapper<Employee> employeeMapper = (row) -> Employee.builder()
-            .id(row.getLong("id"))
-            .gender(Gender.valueOf(row.getString("gender")))
-            .maritalStatus(MaritalStatus.valueOf(row.getString("marital_status")))
-            .birthDate(row.getLocalDate("birth_date"))
-            .hasChildren(row.getBoolean("has_children"))
-            .email(row.getString("email"))
-            .name(row.getString("name"))
-            .salary(row.getBigDecimal("salary"))
+  private static final RowMapper<Employee> employeeMapper =
+      (row) ->
+          new Employee(
+              row.getLong("id"),
+              row.getString("name"),
+              row.getString("email"),
+              row.getDate("birth_date").toLocalDate(),
+              row.getBigDecimal("salary"),
+              row.getBoolean("has_children"),
+              Gender.valueOf(row.getString("gender")),
+              MaritalStatus.valueOf(row.getString("marital_status")));
+
+  QueryExecutor executor;
+
+  @BeforeAll
+  public void init() {
+    executor = new SqlQueryExecutor(connection, true);
+  }
+
+  @Test
+  public void selectAll() {
+    Query query = Select.from("employee").build();
+    List<Employee> employees = executor.findList(query, employeeMapper);
+    assertEquals(employees.size(), 200);
+
+    query = Select.from(Table.with("employee", "e")).where("gender").eq(Gender.MALE).build();
+
+    List<Employee> maleEmployees = executor.findList(query, employeeMapper);
+    assertEquals(maleEmployees, filter(employees, e -> Gender.MALE.equals(e.getGender())));
+
+    query =
+        Select.from(Table.with("employee", "e"))
+            .where("gender")
+            .eq(Gender.MALE)
+            .and("marital_status")
+            .eq(MaritalStatus.MARRIED)
             .build();
 
-    @Test
-    public void selectAll() {
-        QueryExecutor executor = new SqlQueryExecutor(connection, true);
+    List<Employee> marriedMaleEmployees = executor.findList(query, employeeMapper);
+    assertEquals(
+        marriedMaleEmployees,
+        filter(
+            employees,
+            e ->
+                Gender.MALE.equals(e.getGender())
+                    && MaritalStatus.MARRIED.equals(e.getMaritalStatus())));
 
-        Query query = Select.from("employee").build();
-        List<Employee> employees = executor.findList(query, employeeMapper);
-        assertEquals(employees.size(), 200);
+    query = Select.from(Table.with("employee", "e")).where("salary").between(1500, 1800).build();
 
-        query = Select.from(Table.with("employee", "e"))
-                .where("gender").eq(Gender.MALE)
-                .build();
+    List<Employee> employeesWithSalaryBetween1500And1800 = executor.findList(query, employeeMapper);
+    assertEquals(
+        employeesWithSalaryBetween1500And1800,
+        filter(
+            employees,
+            e -> e.getSalary().doubleValue() >= 1500 && e.getSalary().doubleValue() <= 1800));
+  }
 
-        List<Employee> maleEmployees = executor.findList(query, employeeMapper);
-        assertEquals(maleEmployees, filter(employees, e -> Gender.MALE.equals(e.getGender())));
+  @Test
+  public void findWithReturnType() {
+    Query query = Select.from("employee").where("id").in(1, 2).build();
+    List<Employee> result = executor.findList(query, Employee.class);
+    assertEquals(result.size(), 2);
 
-        query = Select.from(Table.with("employee", "e"))
-                .where("gender").eq(Gender.MALE)
-                .and("marital_status").eq(MaritalStatus.MARRIED)
-                .build();
+    assertEquals(result.get(0).getId(), 1);
+    assertEquals(result.get(0).getGender(), Gender.MALE);
+    assertEquals(result.get(0).getMaritalStatus(), MaritalStatus.SINGLE);
+    assertEquals(result.get(0).getName(), "Jared Moses");
+    assertEquals(result.get(0).getSalary(), BigDecimal.valueOf(4601));
+    assertEquals(result.get(0).getEmail(), "fermentum.metus.Aenean@porttitorvulputateposuere.net");
+    assertEquals(result.get(0).getBirthDate(), LocalDate.parse("1981-12-03"));
 
-        List<Employee> marriedMaleEmployees = executor.findList(query, employeeMapper);
-        assertEquals(marriedMaleEmployees, filter(employees,
-                e -> Gender.MALE.equals(e.getGender()) && MaritalStatus.MARRIED.equals(e.getMaritalStatus())));
+    assertEquals(result.get(1).getId(), 2);
+    assertEquals(result.get(1).getGender(), Gender.FEMALE);
+    assertEquals(result.get(1).getMaritalStatus(), MaritalStatus.SINGLE);
+    assertEquals(result.get(1).getName(), "Finn Arnold");
+    assertEquals(result.get(1).getSalary(), BigDecimal.valueOf(1321));
+    assertEquals(result.get(1).getEmail(), "faucibus.lectus.a@risusMorbimetus.com");
+    assertEquals(result.get(1).getBirthDate(), LocalDate.parse("1947-03-15"));
+  }
 
-        query = Select.from(Table.with("employee", "e"))
-                .where("salary").between(1500, 1800)
-                .build();
+  @Test
+  public void groupBy() {
+    Query query =
+        Select.from("employee", "gender", "count(*)")
+            .where("birth_date")
+            .gt(LocalDate.parse("1980-01-01"))
+            .groupBy("gender")
+            .build();
 
-        List<Employee> employeesWithSalaryBetween1500And1800 = executor.findList(query, employeeMapper);
-        assertEquals(employeesWithSalaryBetween1500And1800, filter(employees,
-                e -> e.getSalary().doubleValue() >= 1500 && e.getSalary().doubleValue() <= 1800));
+    List<KeyValue<String, Long>> results =
+        executor.findList(
+            query,
+            rs -> {
+              String gender = rs.getString(1);
+              long count = rs.getLong(2);
+              return new KeyValue<>(gender, count);
+            });
+    assertFalse(results.isEmpty());
+    assertEquals(results.get(0).key, "MALE");
+    assertEquals(results.get(0).value, 39L);
+    assertEquals(results.get(1).key, "FEMALE");
+    assertEquals(results.get(1).value, 53L);
+  }
+
+  @Test
+  public void selectDistinct() {
+    Query query =
+        Select.from("employee", "distinct gender")
+            .where("birth_date")
+            .gt(LocalDate.parse("1980-01-01"))
+            .build();
+
+    List<String> results = executor.findList(query, rs -> rs.getString(1));
+    assertEquals(results.size(), 2);
+  }
+
+  private static List<Employee> filter(List<Employee> employees, Predicate<Employee> predicate) {
+    return employees.stream().filter(predicate).collect(Collectors.toList());
+  }
+
+  public static class KeyValue<K, V> {
+    private final K key;
+    private final V value;
+
+    public KeyValue(K key, V value) {
+      this.key = key;
+      this.value = value;
     }
-
-    private static List<Employee> filter(List<Employee> employees, Predicate<Employee> predicate) {
-        return employees.stream()
-                .filter(predicate)
-                .collect(Collectors.toList());
-    }
+  }
 }
