@@ -130,7 +130,7 @@ public class QueryExecutorIntTest extends BaseIntTest {
   }
 
   @Test
-  @Disabled
+//  @Disabled
   public void selectDistinct() {
     Query query =
         Select.from("employee", "distinct gender")
