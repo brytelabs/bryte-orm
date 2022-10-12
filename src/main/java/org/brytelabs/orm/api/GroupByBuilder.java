@@ -1,3 +1,7 @@
 package org.brytelabs.orm.api;
 
-public interface GroupByBuilder extends OrderBy {}
+import java.util.List;
+
+public interface GroupByBuilder extends OrderBy {
+    List<Field> fields();
+}

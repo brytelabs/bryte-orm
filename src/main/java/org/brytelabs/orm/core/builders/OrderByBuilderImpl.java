@@ -3,25 +3,22 @@ package org.brytelabs.orm.core.builders;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.brytelabs.orm.api.Direction;
-import org.brytelabs.orm.api.Field;
-import org.brytelabs.orm.api.LimitBuilder;
-import org.brytelabs.orm.api.OffsetBuilder;
-import org.brytelabs.orm.api.Order;
-import org.brytelabs.orm.api.OrderByBuilder;
+
+import org.brytelabs.orm.api.*;
 
 public final class OrderByBuilderImpl implements OrderByBuilder {
   private final List<Order> orders;
-  private final QueryImpl query;
+  private final Query query;
 
-  public OrderByBuilderImpl(Field field, Direction direction, QueryImpl query) {
-    this(query, Order.of(field, direction));
+  public OrderByBuilderImpl(Field field, Direction direction, Query query) {
+    this(query, new Order(field, direction));
   }
 
-  public OrderByBuilderImpl(QueryImpl query, Order... orders) {
+  public OrderByBuilderImpl(Query query, Order... orders) {
     this.orders = Stream.of(orders).collect(Collectors.toList());
-    this.query = query;
-    this.query.setOrderByBuilder(this);
+    this.query = new QueryImpl(query.selectBuilder(), query.whereBuilder(), query.joinBuilder(),
+                               this, query.groupByBuilder(), query.onBuilder(), query.limitBuilder(),
+                               query.offsetBuilder(), query.subQuery());
   }
 
   @Override
@@ -35,7 +32,7 @@ public final class OrderByBuilderImpl implements OrderByBuilder {
   }
 
   @Override
-  public QueryImpl build() {
+  public Query build() {
     return query;
   }
 

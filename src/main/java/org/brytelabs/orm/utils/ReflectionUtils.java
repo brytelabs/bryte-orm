@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ReflectionUtils {
@@ -29,6 +30,6 @@ public class ReflectionUtils {
 
   public static Map<String, Field> getDeclaredFieldsMap(Class<?> type) {
     return getDeclaredFields(type).stream()
-        .collect(Collectors.toMap(f -> f.getName().toLowerCase().replaceAll("-", ""), f -> f));
+        .collect(Collectors.toMap(f -> f.getName().toLowerCase().replaceAll("_", ""), Function.identity()));
   }
 }

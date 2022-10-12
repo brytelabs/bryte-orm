@@ -1,21 +1,14 @@
 package org.brytelabs.orm.core.builders;
 
-import org.brytelabs.orm.api.ConjunctionBuilder;
-import org.brytelabs.orm.api.Field;
-import org.brytelabs.orm.api.GroupByBuilder;
-import org.brytelabs.orm.api.LimitBuilder;
-import org.brytelabs.orm.api.OffsetBuilder;
-import org.brytelabs.orm.api.Order;
-import org.brytelabs.orm.api.OrderByBuilder;
-import org.brytelabs.orm.api.WhereBuilder;
+import org.brytelabs.orm.api.*;
 import org.brytelabs.orm.core.domain.LinkedConjunction;
 import org.brytelabs.orm.core.operations.ConjunctionOperation;
 
 public final class ConjunctionBuilderImpl implements ConjunctionBuilder {
   private final LinkedConjunction linkedConjunction;
-  private final QueryImpl query;
+  private final Query query;
 
-  public ConjunctionBuilderImpl(LinkedConjunction linkedConjunction, QueryImpl query) {
+  public ConjunctionBuilderImpl(LinkedConjunction linkedConjunction, Query query) {
     this.linkedConjunction = linkedConjunction;
     this.query = query;
   }
@@ -53,7 +46,7 @@ public final class ConjunctionBuilderImpl implements ConjunctionBuilder {
   }
 
   @Override
-  public QueryImpl build() {
+  public Query build() {
     return query;
   }
 }

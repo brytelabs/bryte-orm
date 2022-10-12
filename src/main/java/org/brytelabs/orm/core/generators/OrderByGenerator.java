@@ -28,9 +28,9 @@ public class OrderByGenerator implements Generator {
         + orderByBuilder.getOrders().stream()
             .map(
                 order ->
-                    order.getField().forCondition(fromTable)
+                    order.field().forCondition(fromTable)
                         + " "
-                        + order.getDirection().getValue())
+                        + order.direction().getValue())
             .collect(Collectors.joining(", "));
   }
 }

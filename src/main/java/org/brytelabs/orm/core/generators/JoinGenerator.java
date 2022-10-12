@@ -37,17 +37,17 @@ public class JoinGenerator implements Generator {
             .append(" ")
             .append("on ");
 
-    String referenceTableAliasPrefix = joinBuilder.getJoinedTable().getAlias() + ".";
-    String referencedTableAliasPrefix = referencedTable.getAlias() + ".";
+    String referenceTableAliasPrefix = joinBuilder.getJoinedTable().alias() + ".";
+    String referencedTableAliasPrefix = referencedTable.alias() + ".";
 
-    if (!SqlUtils.isAliased(onBuilder.getCondition().getReferenceField())) {
+    if (!SqlUtils.isAliased(onBuilder.getCondition().referencedField())) {
       builder.append(referenceTableAliasPrefix);
     }
-    builder.append(onBuilder.getCondition().getReferenceField()).append(" = ");
+    builder.append(onBuilder.getCondition().referencedField()).append(" = ");
 
-    if (!SqlUtils.isAliased(onBuilder.getCondition().getReferencedField())) {
+    if (!SqlUtils.isAliased(onBuilder.getCondition().referencedField())) {
       builder.append(referencedTableAliasPrefix);
     }
-    return builder.append(onBuilder.getCondition().getReferencedField()).toString();
+    return builder.append(onBuilder.getCondition().referencedField()).toString();
   }
 }

@@ -1,21 +1,21 @@
 package org.brytelabs.orm.api;
 
 public interface Query {
-  SelectBuilder getSelectBuilder();
+  SelectBuilder selectBuilder();
 
-  WhereBuilder getWhereBuilder();
+  WhereBuilder whereBuilder();
 
-  JoinBuilder getJoinBuilder();
+  JoinBuilder joinBuilder();
 
-  OrderByBuilder getOrderByBuilder();
+  OrderByBuilder orderByBuilder();
 
-  GroupByBuilder getGroupByBuilder();
+  GroupByBuilder groupByBuilder();
 
-  OnBuilder getOnBuilder();
+  OnBuilder onBuilder();
 
-  LimitBuilder getLimitBuilder();
+  LimitBuilder limitBuilder();
 
-  OffsetBuilder getOffsetBuilder();
+  OffsetBuilder offsetBuilder();
 
-  Query getSubQuery();
+  Query subQuery();
 }

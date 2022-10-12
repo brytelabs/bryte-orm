@@ -35,6 +35,6 @@ public class ExceptionUtils {
   }
 
   public static <T> void passOrThrowIfNullOrEmpty(T value, Supplier<String> message) {
-    passOrThrow(value, message, (val) -> val == null || String.valueOf(val).trim().isEmpty());
+    passOrThrow(value, message, (val) -> val == null || String.valueOf(val).isBlank());
   }
 }

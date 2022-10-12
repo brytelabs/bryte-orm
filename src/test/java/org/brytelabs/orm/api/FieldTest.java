@@ -25,22 +25,22 @@ class FieldTest {
   @Test
   public void doNotThrowExceptionIfFieldAreCorrectlySet() {
     Field field = Field.with("age");
-    assertEquals(field.getName(), "age");
-    assertEquals(field.getAlias(), "age");
+    assertEquals(field.name(), "age");
+    assertEquals(field.alias(), "age");
 
     field = Field.with("age", "a");
-    assertEquals(field.getName(), "age");
-    assertEquals(field.getAlias(), "a");
+    assertEquals(field.name(), "age");
+    assertEquals(field.alias(), "a");
   }
 
   @Test
   public void tableAliasedFields() {
     Field field = Field.with("user.age");
-    assertEquals(field.getName(), "user.age");
-    assertEquals(field.getAlias(), "age");
+    assertEquals(field.name(), "user.age");
+    assertEquals(field.alias(), "age");
 
     field = Field.with("user.age", "a");
-    assertEquals(field.getName(), "user.age");
-    assertEquals(field.getAlias(), "a");
+    assertEquals(field.name(), "user.age");
+    assertEquals(field.alias(), "a");
   }
 }

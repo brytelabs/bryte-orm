@@ -16,12 +16,7 @@ import java.time.temporal.Temporal;
 import java.util.function.Function;
 import org.brytelabs.orm.utils.SqlUtils;
 
-public class Result {
-  private final ResultSet resultSet;
-
-  public Result(ResultSet resultSet) {
-    this.resultSet = resultSet;
-  }
+public record Result(ResultSet resultSet) {
 
   public int getInt(String column) throws SQLException {
     return resultSet.getInt(column);
@@ -197,6 +192,10 @@ public class Result {
       return getEnum(col, enumClass);
     } else if (Temporal.class.isAssignableFrom(type)) {
       return SqlUtils.fromSqlDate(type, getObject(col));
+    } else if (type == byte.class) {
+      return getByte(col);
+    } else if (type == byte[].class) {
+      return getBytes(col);
     }
 
     Object val = getObject(col);

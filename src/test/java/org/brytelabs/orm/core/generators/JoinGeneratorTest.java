@@ -16,7 +16,7 @@ class JoinGeneratorTest {
     Query query = Select.from(fromTable).leftJoin(joinTable).on("user_id", "id").build();
 
     Generator generator =
-        new JoinGenerator(query.getJoinBuilder(), query.getOnBuilder(), fromTable);
+        new JoinGenerator(query.joinBuilder(), query.onBuilder(), fromTable);
     assertEquals(generator.generate(), "left join profile profile on profile.user_id = user.id");
   }
 
@@ -28,7 +28,7 @@ class JoinGeneratorTest {
         Select.from(fromTable).leftJoin(joinTable).on("profile.user_id", "user.id").build();
 
     Generator generator =
-        new JoinGenerator(query.getJoinBuilder(), query.getOnBuilder(), fromTable);
+        new JoinGenerator(query.joinBuilder(), query.onBuilder(), fromTable);
     assertEquals(generator.generate(), "left join profile profile on profile.user_id = user.id");
   }
 
@@ -39,7 +39,7 @@ class JoinGeneratorTest {
     Query query = Select.from(fromTable).leftJoin(joinTable).on("user_id", "id").build();
 
     Generator generator =
-        new JoinGenerator(query.getJoinBuilder(), query.getOnBuilder(), fromTable);
+        new JoinGenerator(query.joinBuilder(), query.onBuilder(), fromTable);
     assertEquals(generator.generate(), "left join profile p on p.user_id = u.id");
   }
 }

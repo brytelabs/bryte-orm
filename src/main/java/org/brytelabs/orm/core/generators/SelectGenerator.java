@@ -31,18 +31,13 @@ public class SelectGenerator implements Generator {
   public String generate() {
     StringBuilder sb = new StringBuilder("select ");
     switch (selectBuilder.getSelectOperation()) {
-      case ALL:
-        sb.append("*");
-        break;
-      case FIELDS:
-        sb.append(delimitFields(selectBuilder.getFields(), selectBuilder.getTable()));
-        break;
-      default:
-        sb.append(
-            quoteAggregateOperation(
-                selectBuilder.getSelectOperation(),
-                selectBuilder.getFields(),
-                selectBuilder.getTable()));
+      case ALL -> sb.append("*");
+      case FIELDS -> sb.append(delimitFields(selectBuilder.getFields(), selectBuilder.getTable()));
+      default -> sb.append(
+              quoteAggregateOperation(
+                      selectBuilder.getSelectOperation(),
+                      selectBuilder.getFields(),
+                      selectBuilder.getTable()));
     }
     return sb.append(" from ").append(selectBuilder.getTable()).toString();
   }
@@ -53,11 +48,11 @@ public class SelectGenerator implements Generator {
         fields, () -> "Aggregate operation " + operation + " requires 1 field", f -> f.size() > 1);
 
     Field field = fields.get(0);
-    if (field.getName().equals("*") || SqlUtils.isAliased(field.getName())) {
+    if (field.name().equals("*") || SqlUtils.isAliased(field.name())) {
       return operation.getValue() + "(" + field.forSelect() + ")";
     }
 
-    return String.format("%s(%s.%s)", operation.getValue(), table.getAlias(), field.forSelect());
+    return String.format("%s(%s.%s)", operation.getValue(), table.alias(), field.forSelect());
   }
 
   private String delimitFields(List<Field> fields, Table table) {
@@ -67,9 +62,9 @@ public class SelectGenerator implements Generator {
     return fields.stream()
         .map(
             f ->
-                SqlUtils.isAliased(f.getName()) || f.isAProjection()
+                SqlUtils.isAliased(f.name()) || f.isAProjection()
                     ? f.forSelect()
-                    : table.getAlias() + "." + f.forSelect())
+                    : table.alias() + "." + f.forSelect())
         .collect(Collectors.joining(", "));
   }
 }
