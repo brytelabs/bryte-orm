@@ -4,45 +4,38 @@ import org.brytelabs.orm.api.*;
 import org.brytelabs.orm.core.domain.LinkedConjunction;
 import org.brytelabs.orm.core.operations.ConjunctionOperation;
 
-public final class ConjunctionBuilderImpl implements ConjunctionBuilder {
-  private final LinkedConjunction linkedConjunction;
-  private final Query query;
+import java.util.List;
 
-  public ConjunctionBuilderImpl(LinkedConjunction linkedConjunction, Query query) {
-    this.linkedConjunction = linkedConjunction;
-    this.query = query;
-  }
+public record ConjunctionBuilderImpl(Query query, LinkedConjunction linkedConjunction) implements ConjunctionBuilder {
 
   @Override
   public WhereBuilder and(String field) {
-    return new WhereBuilderImpl(
-        Field.with(field), ConjunctionOperation.AND, linkedConjunction, query);
+    return new WhereBuilderImpl(query, Field.with(field), linkedConjunction, ConjunctionOperation.AND);
   }
 
   @Override
   public WhereBuilder or(String field) {
-    return new WhereBuilderImpl(
-        Field.with(field), ConjunctionOperation.OR, linkedConjunction, query);
+    return new WhereBuilderImpl(query, Field.with(field), linkedConjunction, ConjunctionOperation.OR);
   }
 
   @Override
   public OrderByBuilder orderBy(Order... orders) {
-    return new OrderByBuilderImpl(query, orders);
+    return new OrderByBuilderImpl(query, List.of(orders));
   }
 
   @Override
   public GroupByBuilder groupBy(String... fields) {
-    return new GroupByBuilderImpl(fields, query);
+    return GroupByBuilderImpl.of(query, fields);
   }
 
   @Override
   public OffsetBuilder offset(int offset) {
-    return new OffsetBuilderImpl(offset, query);
+    return new OffsetBuilderImpl(query, offset);
   }
 
   @Override
   public LimitBuilder limit(int limit) {
-    return new LimitBuilderImpl(limit, query);
+    return new LimitBuilderImpl(query, limit);
   }
 
   @Override

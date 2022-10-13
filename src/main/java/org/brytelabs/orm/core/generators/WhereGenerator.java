@@ -20,13 +20,13 @@ public class WhereGenerator implements Generator {
   public void validate() throws SqlQueryException {
     ExceptionUtils.passOrThrowIfNull(whereBuilder, () -> "Where part of the query not found");
     ExceptionUtils.passOrThrowIfNull(
-        whereBuilder.getLinkedConjunction(),
+        whereBuilder.linkedConjunction(),
         () -> "At least 1 condition is required under the where part");
   }
 
   @Override
   public String generate() {
-    LinkedConjunction next = whereBuilder.getLinkedConjunction();
+    LinkedConjunction next = whereBuilder.linkedConjunction();
     StringBuilder query = new StringBuilder("where ").append(formatLinkedConjunction(next));
 
     while (next.hasNext()) {

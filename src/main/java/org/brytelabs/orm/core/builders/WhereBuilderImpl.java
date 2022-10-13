@@ -8,31 +8,14 @@ import org.brytelabs.orm.core.domain.Expression;
 import org.brytelabs.orm.core.domain.LinkedConjunction;
 import org.brytelabs.orm.core.operations.ConjunctionOperation;
 
-public final class WhereBuilderImpl implements WhereBuilder {
-    private final LinkedConjunction linkedConjunction;
-    private final Field field;
-    private final ConjunctionOperation conjunctionOperation;
-    private final Query query;
+public record WhereBuilderImpl(
+    Query query,
+    Field field,
+    LinkedConjunction linkedConjunction,
+    ConjunctionOperation conjunctionOperation) implements WhereBuilder {
 
-    public WhereBuilderImpl(String field, Query query) {
-        this(Field.with(field), null, new LinkedConjunction(), query);
-    }
-
-    public WhereBuilderImpl(Field field, Query query) {
-        this(field, null, new LinkedConjunction(), query);
-    }
-
-    WhereBuilderImpl(
-            Field field,
-            ConjunctionOperation conjunctionOperation,
-            LinkedConjunction linkedConjunction,
-            Query query) {
-        this.field = field;
-        this.conjunctionOperation = conjunctionOperation;
-        this.linkedConjunction = linkedConjunction;
-        this.query = new QueryImpl(query.selectBuilder(), this, query.joinBuilder(),
-                query.orderByBuilder(), query.groupByBuilder(), query.onBuilder(), query.limitBuilder(),
-                query.offsetBuilder(), query.subQuery());
+    public static WhereBuilder of(Query query, Field field) {
+        return new WhereBuilderImpl(query, field, new LinkedConjunction(), null);
     }
 
     @Override
@@ -113,10 +96,9 @@ public final class WhereBuilderImpl implements WhereBuilder {
             current.setNext(new LinkedConjunction(expression));
         }
 
-        return new ConjunctionBuilderImpl(linkedConjunction, query);
-    }
-
-    public LinkedConjunction getLinkedConjunction() {
-        return linkedConjunction;
+        Query qry = new QueryImpl(query.selectBuilder(), this, query.joinBuilder(),
+            query.orderByBuilder(), query.groupByBuilder(), query.onBuilder(), query.limitBuilder(),
+            query.offsetBuilder(), query.subQuery());
+        return new ConjunctionBuilderImpl(qry, linkedConjunction);
     }
 }

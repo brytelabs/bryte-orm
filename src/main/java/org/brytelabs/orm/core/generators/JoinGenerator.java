@@ -23,31 +23,31 @@ public class JoinGenerator implements Generator {
   @Override
   public void validate() throws SqlQueryException {
     ExceptionUtils.passOrThrowIfNull(
-        joinBuilder.getJoinedTable(), () -> "Table to join on cannot be null");
+        joinBuilder.joinedTable(), () -> "Table to join on cannot be null");
     ExceptionUtils.passOrThrowIfNull(
-        onBuilder.getCondition(), () -> "Join condition cannot be null");
+        onBuilder.condition(), () -> "Join condition cannot be null");
   }
 
   @Override
   public String generate() {
     StringBuilder builder =
-        new StringBuilder(joinBuilder.getOperation().getValue())
+        new StringBuilder(joinBuilder.operation().getValue())
             .append(" ")
-            .append(joinBuilder.getJoinedTable())
+            .append(joinBuilder.joinedTable())
             .append(" ")
             .append("on ");
 
-    String referenceTableAliasPrefix = joinBuilder.getJoinedTable().alias() + ".";
+    String referenceTableAliasPrefix = joinBuilder.joinedTable().alias() + ".";
     String referencedTableAliasPrefix = referencedTable.alias() + ".";
 
-    if (!SqlUtils.isAliased(onBuilder.getCondition().referencedField())) {
+    if (!SqlUtils.isAliased(onBuilder.condition().referencedField())) {
       builder.append(referenceTableAliasPrefix);
     }
-    builder.append(onBuilder.getCondition().referencedField()).append(" = ");
+    builder.append(onBuilder.condition().referencedField()).append(" = ");
 
-    if (!SqlUtils.isAliased(onBuilder.getCondition().referencedField())) {
+    if (!SqlUtils.isAliased(onBuilder.condition().referencedField())) {
       builder.append(referencedTableAliasPrefix);
     }
-    return builder.append(onBuilder.getCondition().referencedField()).toString();
+    return builder.append(onBuilder.condition().referencedField()).toString();
   }
 }

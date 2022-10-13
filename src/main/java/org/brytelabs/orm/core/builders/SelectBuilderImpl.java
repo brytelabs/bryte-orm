@@ -1,10 +1,8 @@
 package org.brytelabs.orm.core.builders;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 import java.util.stream.Stream;
-
 import org.brytelabs.orm.api.Field;
 import org.brytelabs.orm.api.JoinBuilder;
 import org.brytelabs.orm.api.LimitBuilder;
@@ -17,31 +15,30 @@ import org.brytelabs.orm.api.WhereBuilder;
 import org.brytelabs.orm.core.operations.JoinOperation;
 import org.brytelabs.orm.core.operations.SelectOperation;
 
-public final class SelectBuilderImpl implements SelectBuilder {
-    private final SelectOperation selectOperation;
-    private final Table table;
-    private final List<Field> fields;
-    private final Query query;
+public record SelectBuilderImpl(
+    Query query,
+    SelectOperation selectOperation,
+    Table table,
+    List<Field> fields
+) implements SelectBuilder {
 
-    public SelectBuilderImpl(SelectOperation selectOperation, Table table) {
-        this(selectOperation, table, null, Collections.emptyList());
+    public SelectBuilderImpl {
+        Objects.requireNonNull(query, "Query cannot be null");
+    }
+    public static SelectBuilder of(SelectOperation selectOperation, Table table) {
+        return new SelectBuilderImpl(QueryImpl.empty(), selectOperation, table, List.of());
     }
 
-    public SelectBuilderImpl(SelectOperation selectOperation, Table table, Query query, String... fields) {
-        this(selectOperation, table, query, Stream.of(fields).map(Field::with).collect(Collectors.toList()));
+    public static SelectBuilder of(SelectOperation selectOperation, Table table, String... fields) {
+        return new SelectBuilderImpl(QueryImpl.empty(), selectOperation, table, Stream.of(fields).map(Field::with).toList());
     }
 
-    public SelectBuilderImpl(SelectOperation selectOperation, Table table, Query query, List<Field> fields) {
-        this.selectOperation = selectOperation;
-        this.table = table;
-        this.fields = fields;
-        if (query == null) {
-            this.query = new QueryImpl(this);
-        } else {
-            this.query = new QueryImpl(query.selectBuilder(), query.whereBuilder(), query.joinBuilder(),
-                    query.orderByBuilder(), query.groupByBuilder(), query.onBuilder(),
-                    query.limitBuilder(), query.offsetBuilder(), query.subQuery());
-        }
+    public static SelectBuilder of(SelectOperation selectOperation, Table table, Query query, String... fields) {
+        return new SelectBuilderImpl(query, selectOperation, table, Stream.of(fields).map(Field::with).toList());
+    }
+
+    public static SelectBuilder of(SelectOperation selectOperation, Table table, List<Field> fields) {
+        return new SelectBuilderImpl(QueryImpl.empty(), selectOperation, table, fields);
     }
 
     @Override
@@ -66,51 +63,41 @@ public final class SelectBuilderImpl implements SelectBuilder {
 
     @Override
     public WhereBuilder where(String field) {
-        return new WhereBuilderImpl(field, query);
+        return WhereBuilderImpl.of(query, Field.with(field));
     }
 
     @Override
     public LimitBuilder limit(int limit) {
-        return new LimitBuilderImpl(limit, query);
+        return new LimitBuilderImpl(query, limit);
     }
 
     @Override
     public OffsetBuilder offset(int offset) {
-        return new OffsetBuilderImpl(offset, query);
+        return new OffsetBuilderImpl(query, offset);
     }
 
     @Override
     public SelectBuilder subQuery(Terminable terminable) {
-        var query2 = new QueryImpl(this, query.whereBuilder(), query.joinBuilder(), query.orderByBuilder(),
+        Query qry = new QueryImpl(this, query.whereBuilder(), query.joinBuilder(), query.orderByBuilder(),
                 query.groupByBuilder(), query.onBuilder(), query.limitBuilder(), query.offsetBuilder(), terminable.build());
-        return new SelectBuilderImpl(this.selectOperation, this.table, query2, this.fields);
+        return new SelectBuilderImpl(qry, this.selectOperation, this.table, this.fields);
     }
 
     @Override
     public SelectBuilder subQuery(Query subQuery) {
-        Query query2 = new QueryImpl(this, query.whereBuilder(), query.joinBuilder(), query.orderByBuilder(),
+        Query qry = new QueryImpl(this, query.whereBuilder(), query.joinBuilder(), query.orderByBuilder(),
                                    query.groupByBuilder(), query.onBuilder(), query.limitBuilder(), query.offsetBuilder(), subQuery);
-        return new SelectBuilderImpl(this.selectOperation, this.table, query2, this.fields);
+        return new SelectBuilderImpl(qry, this.selectOperation, this.table, this.fields);
     }
 
     @Override
     public Query build() {
-        return query;
+        return new QueryImpl(this, query.whereBuilder(), query.joinBuilder(),
+            query.orderByBuilder(), query.groupByBuilder(), query.onBuilder(),
+            query.limitBuilder(), query.offsetBuilder(), query.subQuery());
     }
-
-  public SelectOperation getSelectOperation() {
-    return selectOperation;
-  }
-
-  public Table getTable() {
-    return table;
-  }
-
-    public List<Field> getFields() {
-        return fields;
-    }
-
+    
     private JoinBuilder newJoinBuilder(Table joinedTable, JoinOperation operation) {
-        return new JoinBuilderImpl(joinedTable, operation, query);
+        return new JoinBuilderImpl(query, joinedTable, operation);
     }
 }

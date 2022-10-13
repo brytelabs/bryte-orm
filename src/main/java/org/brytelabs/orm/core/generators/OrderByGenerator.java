@@ -17,7 +17,7 @@ public class OrderByGenerator implements Generator {
 
   @Override
   public void validate() throws SqlQueryException {
-    if (orderByBuilder.getOrders().isEmpty()) {
+    if (orderByBuilder.orders().isEmpty()) {
       throw new SqlQueryException("No order by fields specified");
     }
   }
@@ -25,7 +25,7 @@ public class OrderByGenerator implements Generator {
   @Override
   public String generate() {
     return "order by "
-        + orderByBuilder.getOrders().stream()
+        + orderByBuilder.orders().stream()
             .map(
                 order ->
                     order.field().forCondition(fromTable)

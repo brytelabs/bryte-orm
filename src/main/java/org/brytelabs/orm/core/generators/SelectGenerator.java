@@ -12,7 +12,7 @@ import org.brytelabs.orm.exceptions.SqlQueryException;
 import org.brytelabs.orm.utils.ExceptionUtils;
 import org.brytelabs.orm.utils.SqlUtils;
 
-public class SelectGenerator implements Generator {
+public final class SelectGenerator implements Generator {
   private final SelectBuilderImpl selectBuilder;
 
   public SelectGenerator(SelectBuilder selectBuilder) {
@@ -23,23 +23,23 @@ public class SelectGenerator implements Generator {
   public void validate() throws SqlQueryException {
     Objects.requireNonNull(selectBuilder, "SelectBuilder is required");
     Objects.requireNonNull(
-        selectBuilder.getSelectOperation(), "SelectOperation is required for query");
-    Objects.requireNonNull(selectBuilder.getTable(), "Table is required for query");
+        selectBuilder.selectOperation(), "SelectOperation is required for query");
+    Objects.requireNonNull(selectBuilder.table(), "Table is required for query");
   }
 
   @Override
   public String generate() {
     StringBuilder sb = new StringBuilder("select ");
-    switch (selectBuilder.getSelectOperation()) {
+    switch (selectBuilder.selectOperation()) {
       case ALL -> sb.append("*");
-      case FIELDS -> sb.append(delimitFields(selectBuilder.getFields(), selectBuilder.getTable()));
+      case FIELDS -> sb.append(delimitFields(selectBuilder.fields(), selectBuilder.table()));
       default -> sb.append(
               quoteAggregateOperation(
-                      selectBuilder.getSelectOperation(),
-                      selectBuilder.getFields(),
-                      selectBuilder.getTable()));
+                      selectBuilder.selectOperation(),
+                      selectBuilder.fields(),
+                      selectBuilder.table()));
     }
-    return sb.append(" from ").append(selectBuilder.getTable()).toString();
+    return sb.append(" from ").append(selectBuilder.table()).toString();
   }
 
   private String quoteAggregateOperation(

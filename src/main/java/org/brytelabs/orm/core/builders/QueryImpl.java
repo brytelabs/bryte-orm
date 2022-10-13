@@ -1,6 +1,5 @@
 package org.brytelabs.orm.core.builders;
 
-import lombok.Value;
 import org.brytelabs.orm.api.GroupByBuilder;
 import org.brytelabs.orm.api.JoinBuilder;
 import org.brytelabs.orm.api.LimitBuilder;
@@ -15,13 +14,13 @@ public record QueryImpl(SelectBuilder selectBuilder, WhereBuilder whereBuilder, 
                         OrderByBuilder orderByBuilder, GroupByBuilder groupByBuilder, OnBuilder onBuilder,
                         LimitBuilder limitBuilder, OffsetBuilder offsetBuilder, Query subQuery) implements Query {
 
-    public QueryImpl(SelectBuilder selectBuilder) {
-        this(selectBuilder, null, null, null, null, null, null, null, null);
-    }
-
     public static Query copyOf(Query query) {
         return new QueryImpl(query.selectBuilder(), query.whereBuilder(), query.joinBuilder(), query.orderByBuilder(),
                 query.groupByBuilder(), query.onBuilder(), query.limitBuilder(), query.offsetBuilder(),
                 query.subQuery());
+    }
+
+    public static Query empty() {
+        return new QueryImpl(null, null, null, null, null, null, null, null, null);
     }
 }

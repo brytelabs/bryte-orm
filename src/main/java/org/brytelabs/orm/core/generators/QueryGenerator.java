@@ -22,17 +22,17 @@ public class QueryGenerator implements Generator {
   @Override
   public void validate() throws SqlQueryException {
     ExceptionUtils.passOrThrowIfNull(query.selectBuilder(), () -> "Query is empty");
-    SelectBuilderImpl selectBuilder = (SelectBuilderImpl) query.selectBuilder();
-    JoinBuilderImpl joinBuilder = (JoinBuilderImpl) query.joinBuilder();
+    var selectBuilder = (SelectBuilderImpl) query.selectBuilder();
+    var joinBuilder = (JoinBuilderImpl) query.joinBuilder();
 
     List<Field> fields =
-        selectBuilder.getFields().stream()
+        selectBuilder.fields().stream()
             .filter(f -> SqlUtils.isAliased(f.name()))
             .filter(
                 f ->
-                    !f.name().startsWith(selectBuilder.getTable().alias())
+                    !f.name().startsWith(selectBuilder.table().alias())
                         && (joinBuilder != null
-                            && !f.name().startsWith(joinBuilder.getJoinedTable().alias())))
+                            && !f.name().startsWith(joinBuilder.joinedTable().alias())))
             .toList();
 
     if (!fields.isEmpty()) {
@@ -47,7 +47,7 @@ public class QueryGenerator implements Generator {
 
   @Override
   public String generate() {
-    Table table = ((SelectBuilderImpl) query.selectBuilder()).getTable();
+    Table table = ((SelectBuilderImpl) query.selectBuilder()).table();
     List<Generator> generators = new ArrayList<>();
     generators.add(new SelectGenerator(query.selectBuilder()));
 

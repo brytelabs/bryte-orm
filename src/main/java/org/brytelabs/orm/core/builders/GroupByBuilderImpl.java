@@ -6,29 +6,22 @@ import java.util.stream.Stream;
 
 import org.brytelabs.orm.api.*;
 
-public final class GroupByBuilderImpl implements GroupByBuilder {
-  private final List<Field> fields;
-  private final Query query;
+public record GroupByBuilderImpl(Query query, List<Field> fields) implements GroupByBuilder {
 
-  public GroupByBuilderImpl(String[] fields, Query query) {
-    this(Stream.of(fields).map(Field::with).collect(Collectors.toList()), query);
-  }
-
-    public GroupByBuilderImpl(List<Field> fields, Query query) {
-    this.fields = fields;
-    this.query = new QueryImpl(query.selectBuilder(), query.whereBuilder(), query.joinBuilder(),
-            query.orderByBuilder(), this, query.onBuilder(), query.limitBuilder(),
-            query.offsetBuilder(), query.subQuery());
+  public static GroupByBuilder of(Query query, String[] fields) {
+    return new GroupByBuilderImpl(query, Stream.of(fields).map(Field::with).toList());
   }
 
   @Override
   public OrderByBuilder orderBy(Order... orders) {
-    return new OrderByBuilderImpl(query, orders);
+    return new OrderByBuilderImpl(query, List.of(orders));
   }
 
   @Override
   public Query build() {
-    return query;
+    return new QueryImpl(query.selectBuilder(), query.whereBuilder(), query.joinBuilder(),
+        query.orderByBuilder(), this, query.onBuilder(), query.limitBuilder(),
+        query.offsetBuilder(), query.subQuery());
   }
 
   @Override
