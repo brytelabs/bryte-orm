@@ -8,9 +8,9 @@ import org.brytelabs.orm.api.OnBuilder;
 import org.brytelabs.orm.api.OrderByBuilder;
 import org.brytelabs.orm.api.Query;
 import org.brytelabs.orm.api.SelectBuilder;
-import org.brytelabs.orm.api.WhereBuilder;
+import org.brytelabs.orm.api.WhereExpressionBuilder;
 
-public record QueryImpl(SelectBuilder selectBuilder, WhereBuilder whereBuilder, JoinBuilder joinBuilder,
+public record QueryImpl(SelectBuilder selectBuilder, WhereExpressionBuilder whereBuilder, JoinBuilder joinBuilder,
                         OrderByBuilder orderByBuilder, GroupByBuilder groupByBuilder, OnBuilder onBuilder,
                         LimitBuilder limitBuilder, OffsetBuilder offsetBuilder, Query subQuery) implements Query {
 

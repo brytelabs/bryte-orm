@@ -34,8 +34,8 @@ class QueryGeneratorTest {
             .on("user_id", "id")
             .where("age")
             .lt(20)
-            .groupBy("id", "name", "profile.user_id")
-            .orderAsc("id")
+//            .groupBy("id", "name", "profile.user_id")
+//            .orderAsc("id")
             .build();
     Generator generator = new QueryGenerator(query);
     assertEquals(

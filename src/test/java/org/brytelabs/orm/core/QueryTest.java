@@ -38,13 +38,14 @@ class QueryTest {
     Query query =
         Select.from("accrual")
             .leftJoin("daily_balance_snapshot")
-            .on("profile_id", "profile_id")
+              .on("profile_id").eq("")
+//              .and("another_field", )
             .where("name")
             .eq("Bright")
-            .or("age")
-            .gt(20)
-            .groupBy("name")
-            .orderBy(Order.asc("id"), Order.desc("age"))
+//            .or("age")
+//            .gt(20)
+//            .groupBy("name")
+//            .orderBy(Order.asc("id"), Order.desc("age"))
             .build();
     assertNotNull(query);
   }

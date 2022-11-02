@@ -11,7 +11,7 @@ import org.brytelabs.orm.api.Query;
 import org.brytelabs.orm.api.SelectBuilder;
 import org.brytelabs.orm.api.Table;
 import org.brytelabs.orm.api.Terminable;
-import org.brytelabs.orm.api.WhereBuilder;
+import org.brytelabs.orm.api.WhereExpressionBuilder;
 import org.brytelabs.orm.core.operations.JoinOperation;
 import org.brytelabs.orm.core.operations.SelectOperation;
 
@@ -62,8 +62,8 @@ public record SelectBuilderImpl(
     }
 
     @Override
-    public WhereBuilder where(String field) {
-        return WhereBuilderImpl.of(query, Field.with(field));
+    public WhereExpressionBuilder where(String field) {
+        return WhereExpressionBuilderImpl.of(query, Field.with(field));
     }
 
     @Override
@@ -96,7 +96,7 @@ public record SelectBuilderImpl(
             query.orderByBuilder(), query.groupByBuilder(), query.onBuilder(),
             query.limitBuilder(), query.offsetBuilder(), query.subQuery());
     }
-    
+
     private JoinBuilder newJoinBuilder(Table joinedTable, JoinOperation operation) {
         return new JoinBuilderImpl(query, joinedTable, operation);
     }

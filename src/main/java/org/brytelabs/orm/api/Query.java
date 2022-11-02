@@ -3,7 +3,7 @@ package org.brytelabs.orm.api;
 public interface Query {
   SelectBuilder selectBuilder();
 
-  WhereBuilder whereBuilder();
+  WhereExpressionBuilder whereBuilder();
 
   JoinBuilder joinBuilder();
 
