@@ -17,7 +17,7 @@ class QueryGeneratorTest {
             .on("user_id", "id")
             .where("age")
             .lt(20)
-            .orderAsc("id")
+//            .orderAsc("id")
             .build();
     Generator generator = new QueryGenerator(query);
     SqlQueryException exception = assertThrows(SqlQueryException.class, generator::validate);
