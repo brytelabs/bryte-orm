@@ -2,28 +2,19 @@ package org.brytelabs.orm.core.builders;
 
 import org.brytelabs.orm.api.LimitBuilder;
 import org.brytelabs.orm.api.OffsetBuilder;
+import org.brytelabs.orm.api.Query;
 
-public class LimitBuilderImpl implements LimitBuilder {
-  private final int limit;
-  private final QueryImpl query;
-
-  public LimitBuilderImpl(int limit, QueryImpl query) {
-    this.limit = limit;
-    this.query = query;
-    this.query.setLimitBuilder(this);
-  }
+public record LimitBuilderImpl(Query query, int limit) implements LimitBuilder {
 
   @Override
   public OffsetBuilder offset(int offset) {
-    return new OffsetBuilderImpl(offset, query);
+    return new OffsetBuilderImpl(query, offset);
   }
 
   @Override
-  public QueryImpl build() {
-    return query;
-  }
-
-  public int getLimit() {
-    return limit;
+  public Query build() {
+    return new QueryImpl(query.selectBuilder(), query.whereBuilder(), query.joinBuilder(),
+        query.orderByBuilder(), query.groupByBuilder(), query.onBuilder(), this,
+        query.offsetBuilder(), query.subQuery());
   }
 }

@@ -3,21 +3,20 @@ package org.brytelabs.orm.core.generators;
 import java.util.stream.Collectors;
 import org.brytelabs.orm.api.GroupByBuilder;
 import org.brytelabs.orm.api.Table;
-import org.brytelabs.orm.core.builders.GroupByBuilderImpl;
 import org.brytelabs.orm.exceptions.SqlQueryException;
 
 public class GroupByGenerator implements Generator {
-  private final GroupByBuilderImpl groupByBuilder;
+  private final GroupByBuilder groupByBuilder;
   private final Table fromTable;
 
   public GroupByGenerator(GroupByBuilder groupByBuilder, Table fromTable) {
-    this.groupByBuilder = (GroupByBuilderImpl) groupByBuilder;
+    this.groupByBuilder = groupByBuilder;
     this.fromTable = fromTable;
   }
 
   @Override
   public void validate() throws SqlQueryException {
-    if (groupByBuilder.getFields() == null || groupByBuilder.getFields().isEmpty()) {
+    if (groupByBuilder.fields() == null || groupByBuilder.fields().isEmpty()) {
       throw new SqlQueryException("Group by fields should be provided");
     }
   }
@@ -25,7 +24,7 @@ public class GroupByGenerator implements Generator {
   @Override
   public String generate() {
     return "group by "
-        + groupByBuilder.getFields().stream()
+        + groupByBuilder.fields().stream()
             .map(f -> f.forCondition(fromTable))
             .collect(Collectors.joining(", "));
   }

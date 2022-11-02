@@ -21,23 +21,23 @@ public class QueryGenerator implements Generator {
 
   @Override
   public void validate() throws SqlQueryException {
-    ExceptionUtils.passOrThrowIfNull(query.getSelectBuilder(), () -> "Query is empty");
-    SelectBuilderImpl selectBuilder = (SelectBuilderImpl) query.getSelectBuilder();
-    JoinBuilderImpl joinBuilder = (JoinBuilderImpl) query.getJoinBuilder();
+    ExceptionUtils.passOrThrowIfNull(query.selectBuilder(), () -> "Query is empty");
+    var selectBuilder = (SelectBuilderImpl) query.selectBuilder();
+    var joinBuilder = (JoinBuilderImpl) query.joinBuilder();
 
     List<Field> fields =
-        selectBuilder.getFields().stream()
-            .filter(f -> SqlUtils.isAliased(f.getName()))
+        selectBuilder.fields().stream()
+            .filter(f -> SqlUtils.isAliased(f.name()))
             .filter(
                 f ->
-                    !f.getName().startsWith(selectBuilder.getTable().getAlias())
+                    !f.name().startsWith(selectBuilder.table().alias())
                         && (joinBuilder != null
-                            && !f.getName().startsWith(joinBuilder.getJoinedTable().getAlias())))
-            .collect(Collectors.toList());
+                            && !f.name().startsWith(joinBuilder.joinedTable().alias())))
+            .toList();
 
     if (!fields.isEmpty()) {
       String incorrectFields =
-          fields.stream().map(Field::getName).collect(Collectors.joining(", "));
+          fields.stream().map(Field::name).collect(Collectors.joining(", "));
       throw new SqlQueryException(
           "Fields "
               + incorrectFields
@@ -47,24 +47,24 @@ public class QueryGenerator implements Generator {
 
   @Override
   public String generate() {
-    Table table = ((SelectBuilderImpl) query.getSelectBuilder()).getTable();
+    Table table = ((SelectBuilderImpl) query.selectBuilder()).table();
     List<Generator> generators = new ArrayList<>();
-    generators.add(new SelectGenerator(query.getSelectBuilder()));
+    generators.add(new SelectGenerator(query.selectBuilder()));
 
-    if (query.getJoinBuilder() != null) {
-      generators.add(new JoinGenerator(query.getJoinBuilder(), query.getOnBuilder(), table));
+    if (query.joinBuilder() != null) {
+      generators.add(new JoinGenerator(query.joinBuilder(), query.onBuilder(), table));
     }
 
-    if (query.getWhereBuilder() != null) {
-      generators.add(new WhereGenerator(query.getWhereBuilder(), table));
+    if (query.whereBuilder() != null) {
+      generators.add(new WhereGenerator(query.whereBuilder(), table));
     }
 
-    if (query.getGroupByBuilder() != null) {
-      generators.add(new GroupByGenerator(query.getGroupByBuilder(), table));
+    if (query.groupByBuilder() != null) {
+      generators.add(new GroupByGenerator(query.groupByBuilder(), table));
     }
 
-    if (query.getOrderByBuilder() != null) {
-      generators.add(new OrderByGenerator(query.getOrderByBuilder(), table));
+    if (query.orderByBuilder() != null) {
+      generators.add(new OrderByGenerator(query.orderByBuilder(), table));
     }
 
     return generators.stream()

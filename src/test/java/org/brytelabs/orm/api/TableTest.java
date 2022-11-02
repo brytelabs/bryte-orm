@@ -29,11 +29,11 @@ class TableTest {
   @Test
   public void doNotThrowExceptionIfFieldAreCorrectlySet() {
     Table table = Table.with("user");
-    assertEquals(table.getName(), "user");
-    assertEquals(table.getAlias(), "user");
+    assertEquals(table.name(), "user");
+    assertEquals(table.alias(), "user");
 
     table = Table.with("user", "u");
-    assertEquals(table.getName(), "user");
-    assertEquals(table.getAlias(), "u");
+    assertEquals(table.name(), "user");
+    assertEquals(table.alias(), "u");
   }
 }

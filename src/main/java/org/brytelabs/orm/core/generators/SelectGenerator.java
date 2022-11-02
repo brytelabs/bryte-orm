@@ -12,7 +12,7 @@ import org.brytelabs.orm.exceptions.SqlQueryException;
 import org.brytelabs.orm.utils.ExceptionUtils;
 import org.brytelabs.orm.utils.SqlUtils;
 
-public class SelectGenerator implements Generator {
+public final class SelectGenerator implements Generator {
   private final SelectBuilderImpl selectBuilder;
 
   public SelectGenerator(SelectBuilder selectBuilder) {
@@ -23,28 +23,23 @@ public class SelectGenerator implements Generator {
   public void validate() throws SqlQueryException {
     Objects.requireNonNull(selectBuilder, "SelectBuilder is required");
     Objects.requireNonNull(
-        selectBuilder.getSelectOperation(), "SelectOperation is required for query");
-    Objects.requireNonNull(selectBuilder.getTable(), "Table is required for query");
+        selectBuilder.selectOperation(), "SelectOperation is required for query");
+    Objects.requireNonNull(selectBuilder.table(), "Table is required for query");
   }
 
   @Override
   public String generate() {
     StringBuilder sb = new StringBuilder("select ");
-    switch (selectBuilder.getSelectOperation()) {
-      case ALL:
-        sb.append("*");
-        break;
-      case FIELDS:
-        sb.append(delimitFields(selectBuilder.getFields(), selectBuilder.getTable()));
-        break;
-      default:
-        sb.append(
-            quoteAggregateOperation(
-                selectBuilder.getSelectOperation(),
-                selectBuilder.getFields(),
-                selectBuilder.getTable()));
+    switch (selectBuilder.selectOperation()) {
+      case ALL -> sb.append("*");
+      case FIELDS -> sb.append(delimitFields(selectBuilder.fields(), selectBuilder.table()));
+      default -> sb.append(
+              quoteAggregateOperation(
+                      selectBuilder.selectOperation(),
+                      selectBuilder.fields(),
+                      selectBuilder.table()));
     }
-    return sb.append(" from ").append(selectBuilder.getTable()).toString();
+    return sb.append(" from ").append(selectBuilder.table()).toString();
   }
 
   private String quoteAggregateOperation(
@@ -53,11 +48,11 @@ public class SelectGenerator implements Generator {
         fields, () -> "Aggregate operation " + operation + " requires 1 field", f -> f.size() > 1);
 
     Field field = fields.get(0);
-    if (field.getName().equals("*") || SqlUtils.isAliased(field.getName())) {
+    if (field.name().equals("*") || SqlUtils.isAliased(field.name())) {
       return operation.getValue() + "(" + field.forSelect() + ")";
     }
 
-    return String.format("%s(%s.%s)", operation.getValue(), table.getAlias(), field.forSelect());
+    return String.format("%s(%s.%s)", operation.getValue(), table.alias(), field.forSelect());
   }
 
   private String delimitFields(List<Field> fields, Table table) {
@@ -67,9 +62,9 @@ public class SelectGenerator implements Generator {
     return fields.stream()
         .map(
             f ->
-                SqlUtils.isAliased(f.getName()) || f.isAProjection()
+                SqlUtils.isAliased(f.name()) || f.isAProjection()
                     ? f.forSelect()
-                    : table.getAlias() + "." + f.forSelect())
+                    : table.alias() + "." + f.forSelect())
         .collect(Collectors.joining(", "));
   }
 }

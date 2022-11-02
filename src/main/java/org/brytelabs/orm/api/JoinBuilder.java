@@ -5,7 +5,10 @@ import org.brytelabs.orm.core.domain.JoinCondition;
 public interface JoinBuilder {
   OnBuilder on(JoinCondition field);
 
+  JoinExpressionBuilder on(String field);
+  JoinExpressionBuilder on(Field field);
+
   default OnBuilder on(String referenceField, String referencedField) {
-    return on(JoinCondition.equal(referenceField, referencedField));
+    return on(new JoinCondition(referenceField, referencedField));
   }
 }

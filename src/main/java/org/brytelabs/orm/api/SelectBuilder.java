@@ -25,7 +25,7 @@ public interface SelectBuilder extends OffsetBuilder, LimitBuilder {
 
   JoinBuilder outerJoin(Table table);
 
-  WhereBuilder where(String field);
+  WhereExpressionBuilder where(String field);
 
   SelectBuilder subQuery(Terminable terminable);
 

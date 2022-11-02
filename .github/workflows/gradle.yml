@@ -13,7 +13,7 @@ jobs:
       - name: Docker compose
         run: docker-compose -f ./docker/docker-compose.yml up -d
       - name: Wait for docker compose
-        run: chmod +x ./docker/wait.sh & ./docker/wait.sh postgres
+        run: chmod +x ./docker/wait.sh && ./docker/wait.sh postgres
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Run tests

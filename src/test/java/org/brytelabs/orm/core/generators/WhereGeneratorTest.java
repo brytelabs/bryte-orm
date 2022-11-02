@@ -14,7 +14,7 @@ class WhereGeneratorTest {
     Table table = Table.with("user");
     Query query = Select.from(table).where("age").gt(20).or("gender").eq("male").build();
 
-    Generator generator = new WhereGenerator(query.getWhereBuilder(), table);
+    Generator generator = new WhereGenerator(query.whereBuilder(), table);
     assertEquals(generator.generate(), "where user.age > 20 or user.gender = 'male'");
   }
 }

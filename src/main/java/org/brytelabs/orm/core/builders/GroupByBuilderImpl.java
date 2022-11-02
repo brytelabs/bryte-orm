@@ -3,36 +3,29 @@ package org.brytelabs.orm.core.builders;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.brytelabs.orm.api.Field;
-import org.brytelabs.orm.api.GroupByBuilder;
-import org.brytelabs.orm.api.Order;
-import org.brytelabs.orm.api.OrderByBuilder;
 
-public final class GroupByBuilderImpl implements GroupByBuilder {
-  private final List<Field> fields;
-  private final QueryImpl query;
+import org.brytelabs.orm.api.*;
 
-  public GroupByBuilderImpl(String[] fields, QueryImpl query) {
-    this(Stream.of(fields).map(Field::with).collect(Collectors.toList()), query);
-  }
+public record GroupByBuilderImpl(Query query, List<Field> fields) implements GroupByBuilder {
 
-  public GroupByBuilderImpl(List<Field> fields, QueryImpl query) {
-    this.fields = fields;
-    this.query = query;
-    this.query.setGroupByBuilder(this);
+  public static GroupByBuilder of(Query query, String[] fields) {
+    return new GroupByBuilderImpl(query, Stream.of(fields).map(Field::with).toList());
   }
 
   @Override
   public OrderByBuilder orderBy(Order... orders) {
-    return new OrderByBuilderImpl(query, orders);
+    return new OrderByBuilderImpl(query, List.of(orders));
   }
 
   @Override
-  public QueryImpl build() {
-    return query;
+  public Query build() {
+    return new QueryImpl(query.selectBuilder(), query.whereBuilder(), query.joinBuilder(),
+        query.orderByBuilder(), this, query.onBuilder(), query.limitBuilder(),
+        query.offsetBuilder(), query.subQuery());
   }
 
-  public List<Field> getFields() {
+  @Override
+  public List<Field> fields() {
     return fields;
   }
 }

@@ -33,20 +33,28 @@ public class ResultToTypeMapper<T> implements RowMapper<T> {
         columnFieldMap.put(colName, fieldsMap.get(fieldKey));
       }
     }
-    final T result = ExceptionUtils.toDataAccessException(returnType::newInstance);
+    final T result = ExceptionUtils.toDataAccessException(() -> returnType.getDeclaredConstructor().newInstance());
     columnFieldMap.forEach(
         (k, field) ->
             ExceptionUtils.toDataAccessException(
                 () -> {
                   if (field != null) {
-                    if (!field.isAccessible()) {
+                    Object val = rs.getValue(k, field.getType());
+                    if (!field.canAccess(val)) {
                       field.setAccessible(true);
                     }
-                    Object val = rs.getValue(k, field.getType());
                     field.set(result, val);
                   }
                   return null;
                 }));
     return result;
   }
+
+//  private <T extends Record> T fillRecord(Class<T> type, Result result) {
+//    Constructor<?> recordConstructor = type.getDeclaredConstructors()[0];
+//    Arrays.stream(recordConstructor.getParameters())
+//        .map(p -> p.getName().toLowerCase())
+//        .map(name -> result.getValue(name, columnFieldMap.get(name).getType()))
+//    ;
+//  }
 }

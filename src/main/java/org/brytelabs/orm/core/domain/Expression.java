@@ -8,20 +8,10 @@ import org.brytelabs.orm.api.Table;
 import org.brytelabs.orm.exceptions.DataAccessException;
 import org.brytelabs.orm.utils.SqlUtils;
 
-@Getter
-public class Expression {
-  private final Sign sign;
-  private final Field field;
-  private final Object value;
+public record Expression(Sign sign, Field field, Object value) {
 
   public Expression(Sign sign, String field, Object value) {
     this(sign, Field.with(field), value);
-  }
-
-  public Expression(Sign sign, Field field, Object value) {
-    this.sign = sign;
-    this.field = field;
-    this.value = value;
   }
 
   public String format(Table selectedTable) {
@@ -29,18 +19,12 @@ public class Expression {
         "%s%s%s", field.forCondition(selectedTable), sign.getValue(), formatValue());
   }
 
-  @SuppressWarnings("unchecked")
   private String formatValue() {
     if (sign == Sign.BETWEEN) {
-      if (!(value instanceof List)) {
-        throw new DataAccessException("between requires a list");
+      if (value instanceof List<?> values && values.size() == 2) {
+        return SqlUtils.quoteParam(values.get(0)) + " and " + SqlUtils.quoteParam(values.get(1));
       }
-      List<Object> values = (List<Object>) value;
-      if (values.size() != 2) {
-        throw new DataAccessException(
-            "between received list with size " + values.size() + " but requires 2");
-      }
-      return SqlUtils.quoteParam(values.get(0)) + " and " + SqlUtils.quoteParam(values.get(1));
+      throw new DataAccessException("BETWEEN requires a list with exactly 2 values");
     }
     return SqlUtils.quoteParam(value);
   }
